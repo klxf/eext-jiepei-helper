@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>关于软件</title>
+	<link rel="stylesheet" href="/iframe/css/index.css">
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+<div class="min-h-screen bg-gray-100 flex items-center justify-center">
+	<div class="bg-white p-6 rounded-lg w-[400px] h-[200px] flex flex-col justify-between items-center text-center">
+		<div>
+			<h1 class="text-2xl font-bold text-gray-800 mb-2" id="name"></h1>
+			<p class="text-[12px] text-gray-600" id="description"></p>
+			<p class="text-gray-600 text-sm" id="version"></p>
+		</div>
+
+		<div class="flex justify-center space-x-4 mt-auto">
+			<a href="#" id="home" class="text-blue-600 hover:text-blue-800 text-sm transition duration-300 ease-in-out">
+				🏠 扩展主页
+			</a>
+			<a href="/iframe/order_iframe.html" id="bugs" class="text-blue-600 hover:text-blue-800 text-sm transition duration-300 ease-in-out">
+				🐞 Bug反馈
+			</a>
+			<a id="check" class="text-blue-600 hover:text-blue-800 text-sm transition duration-300 ease-in-out">
+				✨ 检查更新
+			</a>
+		</div>
+	</div>
+</div>
+<script>
+	// 页面加载完成
+	document.addEventListener('DOMContentLoaded', async function () {
+		const file = await eda.sys_FileSystem.getExtensionFile("/extension.json");
+		if (file) {
+			const extensionData = JSON.parse(await file.text());
+			document.getElementById('name').textContent = extensionData.displayName;
+			document.getElementById('description').textContent = extensionData.description;
+			document.getElementById('version').textContent = `V${extensionData.version}`;
+			document.getElementById('home').setAttribute('href', extensionData.homepage);
+			document.getElementById('bugs').setAttribute('href', extensionData.bugs);
+		}
+	});
+
+	document.addEventListener('click', function (event) {
+		if (event.target.tagName.toLowerCase() === 'a') {
+			event.preventDefault();
+			const url = event.target.getAttribute('href');
+			if (url) {
+				eda.sys_Window.open(url);
+			}
+		}
+	});
+
+	document.getElementById('check').addEventListener('click', function (event) {
+		event.preventDefault();
+		eda.sys_Message.showToastMessage("🥺 尚未支持", 'info');
+	})
+</script>
+</body>
+</html>

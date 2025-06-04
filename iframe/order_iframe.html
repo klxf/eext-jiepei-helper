@@ -1,0 +1,1866 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+	<meta charset="UTF-8">
+	<meta content="width=device-width, initial-scale=1.0" name="viewport">
+	<title>捷配PCB下单</title>
+	<link rel="stylesheet" href="/iframe/css/index.css">
+	<style>
+		/* 新增的禁用样式 */
+		.item.disabled {
+			cursor: not-allowed;
+			opacity: 0.6; /* 降低透明度以示禁用 */
+		}
+		.item.disabled span {
+			border-color: #e2e8f0; /* 更柔和的边框颜色 */
+			background-color: #f8fafc; /* 浅灰色背景 */
+			color: #94a3b8; /* 灰色文字 */
+			pointer-events: none; /* 确保span内部元素也无法点击 */
+		}
+		/* 移除 hover 和 checked 效果 */
+		.item.disabled span:hover {
+			border-color: #e2e8f0;
+			background-color: #f8fafc;
+			color: #94a3b8;
+		}
+		.item.disabled input.peer:checked + span {
+			border-color: #e2e8f0; /* 保持非选中状态的边框色 */
+			background-color: #f8fafc; /* 保持非选中状态的背景色 */
+			color: #94a3b8; /* 保持非选中状态的文字色 */
+		}
+		em.example-color {
+			width: 12px;
+			height: 12px;
+			margin-right: 4px;
+			display: inline-block;
+			border: 1px gray solid;
+			border-radius: inherit;
+		}
+		::-webkit-scrollbar {
+			height: 0.25rem;
+			width: 0.25rem;
+		}
+		::-webkit-scrollbar-thumb {
+			background: rgba(0, 0, 0, 0.2);
+		}
+		*:focus {
+			outline: none;
+		}
+	</style>
+</head>
+<body class="bg-gray-100 p-4 sm:p-8">
+
+<div id="Preset-panel" class="bg-white rounded-lg shadow-md p-4 sm:p-6 max-w-4xl mx-auto mb-2">
+	<div class="flex justify-between items-center mb-4 border-b pb-2">
+		<h2 class="text-lg sm:text-xl font-semibold text-gray-800">订单工艺预设</h2>
+	</div>
+
+	<div class="mb-4">
+		<div class="flex items-center space-x-2">
+			<label class="item cursor-pointer">
+				<input class="block p-1.5 border border-gray-300 rounded-md text-gray-700 font-medium text-xs sm:text-sm hover:border-blue-500 transition-colors duration-200 ease-in-out
+					peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700" id="PresetName" type="text" placeholder="请输入预设名称">
+			</label>
+			<label class="item cursor-pointer">
+				<button class="w-full sm:w-auto px-2 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-200 ease-in-out" id="CreatePreset">
+					新建预设
+				</button>
+			</label>
+		</div>
+	</div>
+
+	<div>
+		<div class="flex flex-wrap gap-1" id="PresetList">
+			<label class="item cursor-pointer">
+				<input class="hidden peer" type="radio" value="0">
+				<span
+					class="block p-1.5 border border-gray-300 rounded-md text-gray-700 font-medium text-xs sm:text-sm hover:border-blue-500 transition-colors duration-200 ease-in-out
+					peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700">默认</span>
+			</label>
+		</div>
+	</div>
+</div>
+
+<div class="bg-white rounded-lg shadow-md p-4 sm:p-6 max-w-4xl mx-auto">
+	<div class="flex justify-between items-center mb-4 border-b pb-2">
+		<h2 class="text-lg sm:text-xl font-semibold text-gray-800">PCB 基本信息</h2>
+	</div>
+
+	<div class="mb-4">
+		<label class="block text-gray-700 text-sm mb-1">板材类别</label>
+		<div class="grid grid-cols-3 sm:grid-cols-6 gap-1.5" id="proCategory">
+			<label class="item flex items-center justify-center cursor-pointer">
+				<input class="hidden peer" name="proCategory" type="radio" value="fr4Item">
+				<span
+					class="block flex items-center justify-center p-1.5 border border-gray-300 rounded-md text-gray-700 font-medium text-xs sm:text-sm hover:border-blue-500 transition-colors duration-200 ease-in-out
+                                 peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700 w-full h-full">
+                      <img alt="FR-4" class="mr-1" src="/iframe/img/img_pro_FR4.png"> FR-4
+                   </span>
+			</label>
+			<label class="item flex items-center justify-center cursor-pointer">
+				<input class="hidden peer" name="proCategory" type="radio" value="aluminumItem">
+				<span
+					class="block flex items-center justify-center p-1.5 border border-gray-300 rounded-md text-gray-700 font-medium text-xs sm:text-sm hover:border-blue-500 transition-colors duration-200 ease-in-out
+                                 peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700 w-full h-full">
+                      <img alt="铝基板" class="mr-1" src="/iframe/img/img_pro_Aluminum.png">
+                      铝基板
+                   </span>
+			</label>
+			<label class="item flex items-center justify-center cursor-pointer">
+				<input class="hidden peer" name="proCategory" type="radio" value="copperItem">
+				<span
+					class="block flex items-center justify-center p-1.5 border border-gray-300 rounded-md text-gray-700 font-medium text-xs sm:text-sm hover:border-blue-500 transition-colors duration-200 ease-in-out
+                                 peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700 w-full h-full">
+                      <img alt="铜基板" class="mr-1" src="/iframe/img/img_pro_Copper.png"> 铜基板
+                   </span>
+			</label>
+			<label class="item flex items-center justify-center cursor-pointer">
+				<input class="hidden peer" name="proCategory" type="radio" value="rogersItem">
+				<span
+					class="block flex items-center justify-center p-1.5 border border-gray-300 rounded-md text-gray-700 font-medium text-xs sm:text-sm hover:border-blue-500 transition-colors duration-200 ease-in-out
+                                 peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700 w-full h-full">
+                      <img alt="高频/混压" class="mr-1" src="/iframe/img/img_pro_Rogers.png">
+                      高频/混压
+                   </span>
+			</label>
+			<label class="item flex items-center justify-center cursor-pointer">
+				<input class="hidden peer" name="proCategory" type="radio" value="hdiItem">
+				<span
+					class="block flex items-center justify-center p-1.5 border border-gray-300 rounded-md text-gray-700 font-medium text-xs sm:text-sm hover:border-blue-500 transition-colors duration-200 ease-in-out
+                                 peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700 w-full h-full">
+                      <img alt="HDI" class="mr-1" src="/iframe/img/img_pro_HDI.png"> HDI
+                   </span>
+			</label>
+			<label class="item flex items-center justify-center cursor-pointer">
+				<input class="hidden peer" name="proCategory" type="radio" value="cem1Item">
+				<span
+					class="block flex items-center justify-center p-1.5 border border-gray-300 rounded-md text-gray-700 font-medium text-xs sm:text-sm hover:border-blue-500 transition-colors duration-200 ease-in-out
+                                 peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700 w-full h-full">
+                      <img alt="CEM-1" class="mr-1" src="/iframe/img/img_pro_CEM1.png">
+                      CEM-1
+                   </span>
+			</label>
+			<label class="item flex items-center justify-center cursor-pointer">
+				<input class="hidden peer" name="proCategory" type="radio" value="22fItem">
+				<span
+					class="block flex items-center justify-center p-1.5 border border-gray-300 rounded-md text-gray-700 font-medium text-xs sm:text-sm hover:border-blue-500 transition-colors duration-200 ease-in-out
+                                 peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700 w-full h-full">
+                      <img alt="22F" class="mr-1" src="/iframe/img/img_pro_22F.png"> 22F
+                   </span>
+			</label>
+			<label class="item flex items-center justify-center cursor-pointer">
+				<input class="hidden peer" name="proCategory" type="radio" value="fr1Item">
+				<span
+					class="block flex items-center justify-center p-1.5 border border-gray-300 rounded-md text-gray-700 font-medium text-xs sm:text-sm hover:border-blue-500 transition-colors duration-200 ease-in-out
+                                 peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700 w-full h-full">
+                      <img alt="FR-1" class="mr-1" src="/iframe/img/img_pro_FR1.png"> FR-1
+                   </span>
+			</label>
+			<label class="item flex items-center justify-center cursor-pointer">
+				<input class="hidden peer" name="proCategory" type="radio" value="cem3Item">
+				<span
+					class="block flex items-center justify-center p-1.5 border border-gray-300 rounded-md text-gray-700 font-medium text-xs sm:text-sm hover:border-blue-500 transition-colors duration-200 ease-in-out
+                                 peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700 w-full h-full">
+                      <img alt="CEM-3" class="mr-1" src="/iframe/img/img_pro_CEM3.png">
+                      CEM-3
+                   </span>
+			</label>
+		</div>
+	</div>
+
+	<div class="mb-4" id="MixedCategory-container">
+		<label class="block text-gray-700 text-sm mb-1">混压类别</label>
+		<div class="flex items-center space-x-2" id="MixedCategory">
+			<label class="item cursor-pointer">
+				<input class="hidden peer" name="MixedCategory" type="radio" value="1">
+				<span
+					class="block p-1.5 border border-gray-300 rounded-md text-gray-700 font-medium text-xs sm:text-sm hover:border-blue-500 transition-colors duration-200 ease-in-out
+					peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700">纯压(罗杰斯)</span>
+			</label>
+			<label class="item cursor-pointer">
+				<input class="hidden peer" name="MixedCategory" type="radio" value="2">
+				<span
+					class="block p-1.5 border border-gray-300 rounded-md text-gray-700 font-medium text-xs sm:text-sm hover:border-blue-500 transition-colors duration-200 ease-in-out
+					peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700">混压(罗杰斯+FR-4)</span>
+			</label>
+		</div>
+	</div>
+
+	<div class="mb-4" id="HDIBuilds-container">
+		<label class="block text-gray-700 text-sm mb-1">阶数</label>
+		<div class="flex items-center space-x-2" id="HDIBuilds">
+			<label class="item cursor-pointer">
+				<input class="hidden peer" name="HDIBuilds" type="radio" value="1">
+				<span
+					class="block p-1.5 border border-gray-300 rounded-md text-gray-700 font-medium text-xs sm:text-sm hover:border-blue-500 transition-colors duration-200 ease-in-out
+					peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700">1阶</span>
+			</label>
+			<label class="item cursor-pointer">
+				<input class="hidden peer" name="HDIBuilds" type="radio" value="2">
+				<span
+					class="block p-1.5 border border-gray-300 rounded-md text-gray-700 font-medium text-xs sm:text-sm hover:border-blue-500 transition-colors duration-200 ease-in-out
+					peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700">2阶</span>
+			</label>
+			<label class="item cursor-pointer">
+				<input class="hidden peer" name="HDIBuilds" type="radio" value="3">
+				<span
+					class="block p-1.5 border border-gray-300 rounded-md text-gray-700 font-medium text-xs sm:text-sm hover:border-blue-500 transition-colors duration-200 ease-in-out
+					peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700">3阶</span>
+			</label>
+		</div>
+	</div>
+
+	<div class="mb-4">
+		<label class="block text-gray-700 text-sm mb-1 flex items-center">板子层数</label>
+		<div class="flex flex-wrap gap-1" id="BoardLayers"></div>
+	</div>
+
+	<div class="mb-4">
+		<label class="block text-gray-700 text-sm mb-1">
+			板子大小
+			<button id="selectBoard" class="px-2 py-0.5 border border-grey-300 rounded-md text-xs hover:border-blue-500 transition-colors duration-200 ease-in-out">选择板框</button>
+		</label>
+		<div class="flex flex-wrap items-center gap-x-1 sm:gap-x-2 gap-y-1 text-sm">
+			<span class="text-gray-700">长(x)</span>
+			<input
+				class="w-16 p-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+				id="BoardWidth" type="number" value="10"> <span class="text-gray-700">CM × 宽(y)</span>
+			<input
+				class="w-16 p-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+				id="BoardHeight" type="number" value="10"> <span class="text-gray-700">CM，数量</span>
+			<input
+				class="w-16 p-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+				id="num" type="number" value="3"> <span class="text-gray-700">PCS</span>
+		</div>
+	</div>
+
+	<div class="mb-4">
+		<label class="block text-gray-700 text-sm mb-1">
+			总面积 <span class="font-bold text-blue-600 text-sm" id="totalArea">0.030m²</span>
+		</label>
+	</div>
+
+	<div class="mb-4"><label class="block text-gray-700 text-sm mb-1">出货方式</label>
+		<div class="flex items-center space-x-2" id="BoardType"><label class="item cursor-pointer">
+			<input class="hidden peer" name="BoardType" type="radio" value="pcs">
+			<span
+				class="block p-1.5 border border-gray-300 rounded-md text-gray-700 font-medium text-xs sm:text-sm hover:border-blue-500 transition-colors duration-200 ease-in-out
+                                 peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700">单片出货</span>
+		</label>
+			<label class="item disabled">
+				<input class="hidden peer" name="BoardType" type="radio" value="set">
+				<span
+					class="block p-1.5 border border-gray-300 rounded-md text-gray-700 font-medium text-xs sm:text-sm hover:border-blue-500 transition-colors duration-200 ease-in-out
+                                 peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700">客户拼版</span>
+			</label>
+			<label class="item disabled">
+				<input class="hidden peer" name="BoardType" type="radio" value="jpset">
+				<span
+					class="block p-1.5 border border-gray-300 rounded-md text-gray-700 font-medium text-xs sm:text-sm hover:border-blue-500 transition-colors duration-200 ease-in-out
+                                 peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700">捷配代拼</span>
+			</label>
+		</div>
+	</div>
+
+	<div>
+		<label class="block text-gray-700 text-sm mb-1">订单阶段</label>
+		<div class="flex items-center space-x-2" id="OrderStage">
+			<label class="item cursor-pointer">
+				<input class="hidden peer" name="OrderStage" type="radio" value="0">
+				<span
+					class="block p-1.5 border border-gray-300 rounded-md text-gray-700 font-medium text-xs sm:text-sm hover:border-blue-500 transition-colors duration-200 ease-in-out peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700">研发打样</span>
+			</label>
+			<label class="item cursor-pointer">
+				<input class="hidden peer" name="OrderStage" type="radio" value="1">
+				<span
+					class="block p-1.5 border border-gray-300 rounded-md text-gray-700 font-medium text-xs sm:text-sm hover:border-blue-500 transition-colors duration-200 ease-in-out
+                                 peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700">量产试样</span>
+			</label>
+		</div>
+	</div>
+
+</div>
+
+<div class="bg-white rounded-lg shadow-md p-4 sm:p-6 max-w-4xl mx-auto mt-2">
+	<div class="flex justify-between items-center mb-4 border-b pb-2">
+		<h2 class="text-lg sm:text-xl font-semibold text-gray-800">PCB 工艺信息</h2>
+	</div>
+
+	<div class="mb-4" id="AluminumType-container" style="display: none;">
+		<label class="block text-gray-700 text-sm mb-1 flex items-center">基板结构</label>
+		<div class="flex flex-wrap gap-1" id="AluminumType"></div>
+	</div>
+
+	<div class="mb-4">
+		<label class="block text-gray-700 text-sm mb-1 flex items-center">板子厚度</label>
+		<div class="flex flex-wrap gap-1" id="BoardThickness"></div>
+	</div>
+
+	<div class="mb-4">
+		<label class="block text-gray-700 text-sm mb-1 flex items-center">铜箔厚度(外层)</label>
+		<div class="flex flex-wrap gap-1" id="CopperThickness"></div>
+	</div>
+
+	<div class="mb-4" id="InnerCopperThickness-container" style="display: none;">
+		<label class="block text-gray-700 text-sm mb-1 flex items-center">铜箔厚度(内层)</label>
+		<div class="flex flex-wrap gap-1" id="InnerCopperThickness"></div>
+	</div>
+
+	<div class="mb-4" id="CopperStructure-container" style="display: none;">
+		<label class="block text-gray-700 text-sm mb-1 flex items-center">铜基结构</label>
+		<div class="flex flex-wrap gap-1" id="CopperStructure">
+			<label class="item cursor-pointer">
+				<input class="hidden peer" name="CopperStructure" type="radio" value="1">
+				<span
+					class="block p-1.5 border border-gray-300 rounded-md text-gray-700 font-medium text-xs sm:text-sm hover:border-blue-500 transition-colors duration-200 ease-in-out
+					peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700">热电分离</span>
+			</label>
+			<label class="item cursor-pointer">
+				<input class="hidden peer" name="CopperStructure" type="radio" value="2" checked="checked">
+				<span
+					class="block p-1.5 border border-gray-300 rounded-md text-gray-700 font-medium text-xs sm:text-sm hover:border-blue-500 transition-colors duration-200 ease-in-out
+					peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700">普通导热</span>
+			</label>
+		</div>
+	</div>
+
+	<div class="mb-4" id="Invoice-container" style="display: none;">
+		<label class="block text-gray-700 text-sm mb-1 flex items-center">导热系数</label>
+		<div class="flex flex-wrap gap-1" id="Invoice"></div>
+	</div>
+
+	<div class="mb-4" id="WithstandVoltage-container" style="display: none;">
+		<label class="block text-gray-700 text-sm mb-1 flex items-center">板材耐压值</label>
+		<div class="flex flex-wrap gap-1" id="WithstandVoltage">
+			<label class="item cursor-pointer">
+				<input class="hidden peer" name="WithstandVoltage" type="radio" value="3000">
+				<span
+					class="block p-1.5 border border-gray-300 rounded-md text-gray-700 font-medium text-xs sm:text-sm hover:border-blue-500 transition-colors duration-200 ease-in-out
+					peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700">AC3000V</span>
+			</label>
+			<label class="item cursor-pointer">
+				<input class="hidden peer" name="WithstandVoltage" type="radio" value="4000">
+				<span
+					class="block p-1.5 border border-gray-300 rounded-md text-gray-700 font-medium text-xs sm:text-sm hover:border-blue-500 transition-colors duration-200 ease-in-out
+					peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700">AC4000V</span>
+			</label>
+		</div>
+	</div>
+
+	<div class="mb-4">
+		<label class="block text-gray-700 text-sm mb-1 flex items-center">阻焊颜色</label>
+		<div class="flex flex-wrap gap-1" id="SolderColor"></div>
+	</div>
+
+	<div class="mb-4">
+		<label class="block text-gray-700 text-sm mb-1 flex items-center">字符颜色</label>
+		<div class="flex flex-wrap gap-1" id="FontColor"></div>
+	</div>
+
+	<div class="mb-4">
+		<label class="block text-gray-700 text-sm mb-1 flex items-center">最小线宽/线距</label>
+		<div class="flex flex-wrap gap-1" id="LineWeight"></div>
+	</div>
+
+	<div class="mb-4">
+		<label class="block text-gray-700 text-sm mb-1 flex items-center">最小孔径</label>
+		<div class="flex flex-wrap gap-1" id="Vias"></div>
+	</div>
+
+	<div class="mb-4" id="SolderCover-container" style="display: none;">
+		<label class="block text-gray-700 text-sm mb-1 flex items-center">阻焊覆盖</label>
+		<div class="flex flex-wrap gap-1" id="SolderCover"></div>
+	</div>
+
+	<div class="mb-4">
+		<label class="block text-gray-700 text-sm mb-1 flex items-center">测试方法</label>
+		<div class="flex flex-wrap gap-1" id="FlyingProbe"></div>
+	</div>
+
+	<div class="mb-4">
+		<label class="block text-gray-700 text-sm mb-1 flex items-center">焊盘表面处理</label>
+		<div class="flex flex-wrap gap-1" id="SurfaceFinish"></div>
+	</div>
+
+	<div class="mb-4" id="ImGoldThinckness-container" style="display: none;">
+		<label class="block text-gray-700 text-sm mb-1 flex items-center">沉金厚度</label>
+		<div class="flex flex-wrap gap-1" id="ImGoldThinckness">
+			<label class="item cursor-pointer">
+				<input class="hidden peer" name="ImGoldThinckness" type="radio" value="1" checked="checked">
+				<span
+					class="block p-1.5 border border-gray-300 rounded-md text-gray-700 font-medium text-xs sm:text-sm hover:border-blue-500 transition-colors duration-200 ease-in-out
+					peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700">1U"</span>
+			</label>
+			<label class="item cursor-pointer">
+				<input class="hidden peer" name="ImGoldThinckness" type="radio" value="2">
+				<span
+					class="block p-1.5 border border-gray-300 rounded-md text-gray-700 font-medium text-xs sm:text-sm hover:border-blue-500 transition-colors duration-200 ease-in-out
+					peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700">2U"</span>
+			</label>
+			<label class="item cursor-pointer">
+				<input class="hidden peer" name="ImGoldThinckness" type="radio" value="3">
+				<span
+					class="block p-1.5 border border-gray-300 rounded-md text-gray-700 font-medium text-xs sm:text-sm hover:border-blue-500 transition-colors duration-200 ease-in-out
+					peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700">3U"</span>
+			</label>
+			<label class="item cursor-pointer">
+				<input class="hidden peer" name="ImGoldThinckness" type="radio" value="4">
+				<span
+					class="block p-1.5 border border-gray-300 rounded-md text-gray-700 font-medium text-xs sm:text-sm hover:border-blue-500 transition-colors duration-200 ease-in-out
+					peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700">4U"</span>
+			</label>
+			<label class="item cursor-pointer">
+				<input class="hidden peer" name="ImGoldThinckness" type="radio" value="5">
+				<span
+					class="block p-1.5 border border-gray-300 rounded-md text-gray-700 font-medium text-xs sm:text-sm hover:border-blue-500 transition-colors duration-200 ease-in-out
+					peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700">5U"</span>
+			</label>
+		</div>
+	</div>
+
+	<div class="mb-4">
+		<label class="block text-gray-700 text-sm mb-1 flex items-center">成型方式</label>
+		<div class="flex flex-wrap gap-1" id="FormingType">
+			<label class="item cursor-pointer">
+				<input class="hidden peer" name="FormingType" type="radio" value="mechanical" checked="checked">
+				<span
+					class="block p-1.5 border border-gray-300 rounded-md text-gray-700 font-medium text-xs sm:text-sm hover:border-blue-500 transition-colors duration-200 ease-in-out
+					peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700">机械成型</span>
+			</label>
+			<label class="item cursor-pointer">
+				<input class="hidden peer" name="FormingType" type="radio" value="module">
+				<span
+					class="block p-1.5 border border-gray-300 rounded-md text-gray-700 font-medium text-xs sm:text-sm hover:border-blue-500 transition-colors duration-200 ease-in-out
+					peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700">模具成型</span>
+			</label>
+		</div>
+	</div>
+
+	<div class="mb-4" id="ImpedanceSize-container" style="display: none;">
+		<label class="block text-gray-700 text-sm mb-1 flex items-center">阻抗</label>
+		<div class="flex flex-wrap gap-1" id="ImpedanceSize">
+			<label class="item cursor-pointer">
+				<input class="hidden peer" name="ImpedanceSize" type="radio" value="1">
+				<span
+					class="block p-1.5 border border-gray-300 rounded-md text-gray-700 font-medium text-xs sm:text-sm hover:border-blue-500 transition-colors duration-200 ease-in-out
+					peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700">是</span>
+			</label>
+			<label class="item cursor-pointer">
+				<input class="hidden peer" name="ImpedanceSize" type="radio" value="0" checked="checked">
+				<span
+					class="block p-1.5 border border-gray-300 rounded-md text-gray-700 font-medium text-xs sm:text-sm hover:border-blue-500 transition-colors duration-200 ease-in-out
+					peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700">否</span>
+			</label>
+		</div>
+	</div>
+
+	<div class="mb-4" id="StackedStructure-container" style="display: none;">
+		<label class="block text-gray-700 text-sm mb-1 flex items-center">叠层结构</label>
+		<div class="flex flex-wrap gap-1" id="StackedStructure">
+			<label class="item disabled">
+				<span class="text-red-500">🚧 暂不支持 🚧</span>
+			</label>
+		</div>
+	</div>
+
+	<div class="mb-4" id="HalfHole-container">
+		<label class="block text-gray-700 text-sm mb-1 flex items-center">半孔</label>
+		<div class="flex flex-wrap gap-1" id="HalfHole">
+			<label class="item cursor-pointer">
+				<input class="hidden peer" name="HalfHole" type="radio" value="0" checked="checked">
+				<span
+					class="block p-1.5 border border-gray-300 rounded-md text-gray-700 font-medium text-xs sm:text-sm hover:border-blue-500 transition-colors duration-200 ease-in-out
+					peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700">无</span>
+			</label>
+			<label class="item cursor-pointer">
+				<input class="hidden peer" name="HalfHole" type="radio" value="1">
+				<span
+					class="block p-1.5 border border-gray-300 rounded-md text-gray-700 font-medium text-xs sm:text-sm hover:border-blue-500 transition-colors duration-200 ease-in-out
+					peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700">一边</span>
+			</label>
+			<label class="item cursor-pointer">
+				<input class="hidden peer" name="HalfHole" type="radio" value="2">
+				<span
+					class="block p-1.5 border border-gray-300 rounded-md text-gray-700 font-medium text-xs sm:text-sm hover:border-blue-500 transition-colors duration-200 ease-in-out
+					peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700">两边</span>
+			</label>
+			<label class="item cursor-pointer">
+				<input class="hidden peer" name="HalfHole" type="radio" value="3">
+				<span
+					class="block p-1.5 border border-gray-300 rounded-md text-gray-700 font-medium text-xs sm:text-sm hover:border-blue-500 transition-colors duration-200 ease-in-out
+					peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700">三边</span>
+			</label>
+			<label class="item cursor-pointer">
+				<input class="hidden peer" name="HalfHole" type="radio" value="4">
+				<span
+					class="block p-1.5 border border-gray-300 rounded-md text-gray-700 font-medium text-xs sm:text-sm hover:border-blue-500 transition-colors duration-200 ease-in-out
+					peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700">四边</span>
+			</label>
+		</div>
+	</div>
+
+	<div id="HoleThickness_-container">
+		<label class="block text-gray-700 text-sm mb-1 flex items-center">孔铜</label>
+		<div class="flex flex-wrap gap-1" id="HoleThickness_">
+			<label class="item cursor-pointer">
+				<input class="hidden peer" name="HoleThickness_" type="radio" value="18" checked="checked">
+				<span
+					class="block p-1.5 border border-gray-300 rounded-md text-gray-700 font-medium text-xs sm:text-sm hover:border-blue-500 transition-colors duration-200 ease-in-out
+					peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700">18um</span>
+			</label>
+			<label class="item cursor-pointer">
+				<input class="hidden peer" name="HoleThickness_" type="radio" value="20">
+				<span
+					class="block p-1.5 border border-gray-300 rounded-md text-gray-700 font-medium text-xs sm:text-sm hover:border-blue-500 transition-colors duration-200 ease-in-out
+					peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700">20um</span>
+			</label>
+			<label class="item cursor-pointer">
+				<input class="hidden peer" name="HoleThickness_" type="radio" value="25">
+				<span
+					class="block p-1.5 border border-gray-300 rounded-md text-gray-700 font-medium text-xs sm:text-sm hover:border-blue-500 transition-colors duration-200 ease-in-out
+					peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700">25um</span>
+			</label>
+			<label class="item cursor-pointer">
+				<input class="hidden peer" name="HoleThickness_" type="radio" value="30">
+				<span
+					class="block p-1.5 border border-gray-300 rounded-md text-gray-700 font-medium text-xs sm:text-sm hover:border-blue-500 transition-colors duration-200 ease-in-out
+					peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700">30um</span>
+			</label>
+			<label class="item cursor-pointer">
+				<input class="hidden peer" name="HoleThickness_" type="radio" value="35">
+				<span
+					class="block p-1.5 border border-gray-300 rounded-md text-gray-700 font-medium text-xs sm:text-sm hover:border-blue-500 transition-colors duration-200 ease-in-out
+					peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700">35um</span>
+			</label>
+		</div>
+	</div>
+</div>
+
+<div class="bg-white rounded-lg shadow-md p-4 sm:p-6 max-w-4xl mx-auto mt-2">
+	<div class="flex justify-between items-center mb-4 border-b pb-2">
+		<h2 class="text-lg sm:text-xl font-semibold text-gray-800">PCB 特殊工艺</h2>
+	</div>
+
+	<div>
+		<div class="flex items-center justify-center h-16 bg-gray-100 border border-gray-300 rounded-md">
+			<span class="text-gray-500">🚧 暂不支持特殊工艺预设 🚧</span>
+		</div>
+	</div>
+</div>
+
+<div class="bg-white rounded-lg shadow-md p-4 sm:p-6 max-w-4xl mx-auto mt-2">
+	<div class="flex justify-between items-center mb-4 border-b pb-2">
+		<h2 class="text-lg sm:text-xl font-semibold text-gray-800">个性化服务</h2>
+	</div>
+
+	<div class="mb-4">
+		<label class="block text-gray-700 text-sm mb-1 flex items-center">序列号/二维码</label>
+		<div class="flex flex-wrap gap-1" id="SerialNumber_">
+			<label class="item disabled">
+				<span class="text-red-500">🚧 暂不支持 🚧</span>
+			</label>
+			<!--<label class="item cursor-pointer">
+				<input class="hidden peer" name="SerialNumber_" type="radio" value="0" checked="checked">
+				<span
+					class="block p-1.5 border border-gray-300 rounded-md text-gray-700 font-medium text-xs sm:text-sm hover:border-blue-500 transition-colors duration-200 ease-in-out
+					peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700">无要求</span>
+			</label>
+			<label class="item disabled">
+				<input class="hidden peer" name="SerialNumber_" type="radio" value="1">
+				<span
+					class="block p-1.5 border border-gray-300 rounded-md text-gray-700 font-medium text-xs sm:text-sm hover:border-blue-500 transition-colors duration-200 ease-in-out
+					peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700">序列号</span>
+			</label>
+			<label class="item disabled">
+				<input class="hidden peer" name="SerialNumber_" type="radio" value="2">
+				<span
+					class="block p-1.5 border border-gray-300 rounded-md text-gray-700 font-medium text-xs sm:text-sm hover:border-blue-500 transition-colors duration-200 ease-in-out
+					peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700">固定二维码</span>
+			</label>
+			<label class="item disabled">
+				<input class="hidden peer" name="SerialNumber_" type="radio" value="3">
+				<span
+					class="block p-1.5 border border-gray-300 rounded-md text-gray-700 font-medium text-xs sm:text-sm hover:border-blue-500 transition-colors duration-200 ease-in-out
+					peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700">动态二维码</span>
+			</label>
+			<label class="item disabled">
+				<input class="hidden peer" name="SerialNumber_" type="radio" value="4">
+				<span
+					class="block p-1.5 border border-gray-300 rounded-md text-gray-700 font-medium text-xs sm:text-sm hover:border-blue-500 transition-colors duration-200 ease-in-out
+					peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700">序列号+动态二维码</span>
+			</label>-->
+		</div>
+	</div>
+
+	<div class="mb-4">
+		<label class="block text-gray-700 text-sm mb-1 flex items-center">品质赔付</label>
+		<div class="flex flex-wrap gap-1" id="QualityCompensation">
+			<label class="item cursor-pointer">
+				<input class="hidden peer" name="QualityCompensation" type="radio" value="0" checked="checked">
+				<span
+					class="block p-1.5 border border-gray-300 rounded-md text-gray-700 font-medium text-xs sm:text-sm hover:border-blue-500 transition-colors duration-200 ease-in-out
+					peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700">按标品合同处理</span>
+			</label>
+			<label class="item cursor-pointer">
+				<input class="hidden peer" name="QualityCompensation" type="radio" value="2">
+				<span
+					class="block p-1.5 border border-gray-300 rounded-md text-gray-700 font-medium text-xs sm:text-sm hover:border-blue-500 transition-colors duration-200 ease-in-out
+					peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700">元器件全额赔付(优品专享)</span>
+			</label>
+		</div>
+	</div>
+
+	<div class="mb-4">
+		<label class="block text-gray-700 text-sm mb-1 flex items-center">四线低阻过孔</label>
+		<div class="flex flex-wrap gap-1" id="LowResistanceTest">
+			<label class="item cursor-pointer">
+				<input class="hidden peer" name="LowResistanceTest" type="radio" value="0" checked="checked">
+				<span
+					class="block p-1.5 border border-gray-300 rounded-md text-gray-700 font-medium text-xs sm:text-sm hover:border-blue-500 transition-colors duration-200 ease-in-out
+					peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700">无要求</span>
+			</label>
+			<label class="item cursor-pointer">
+				<input class="hidden peer" name="LowResistanceTest" type="radio" value="1">
+				<span
+					class="block p-1.5 border border-gray-300 rounded-md text-gray-700 font-medium text-xs sm:text-sm hover:border-blue-500 transition-colors duration-200 ease-in-out
+					peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700">全部测试</span>
+			</label>
+		</div>
+	</div>
+
+	<div class="mb-4">
+		<label class="block text-gray-700 text-sm mb-1 flex items-center">确认生产稿</label>
+		<div class="flex flex-wrap gap-1" id="ProductFileSure">
+			<label class="item cursor-pointer">
+				<input class="hidden peer" name="ProductFileSure" type="radio" value="1">
+				<span
+					class="block p-1.5 border border-gray-300 rounded-md text-gray-700 font-medium text-xs sm:text-sm hover:border-blue-500 transition-colors duration-200 ease-in-out
+					peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700">需要</span>
+			</label>
+			<label class="item cursor-pointer">
+				<input class="hidden peer" name="ProductFileSure" type="radio" value="0" checked="checked">
+				<span
+					class="block p-1.5 border border-gray-300 rounded-md text-gray-700 font-medium text-xs sm:text-sm hover:border-blue-500 transition-colors duration-200 ease-in-out
+					peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700">不需要</span>
+			</label>
+		</div>
+	</div>
+
+	<div class="mb-4">
+		<label class="block text-gray-700 text-sm mb-1 flex items-center">出货报告</label>
+		<div class="flex flex-wrap gap-1" id="ReportList">
+			<label class="item disabled">
+				<span class="text-gray-500">🚧 暂不支持 🚧</span>
+			</label>
+		</div>
+	</div>
+
+	<div class="mb-4">
+		<label class="block text-gray-700 text-sm mb-1 flex items-center">报告材质</label>
+		<div class="flex flex-wrap gap-1" id="ReportMaterial">
+			<label class="item cursor-pointer">
+				<input class="hidden peer" name="ReportMaterial" type="radio" value="0" checked="checked">
+				<span
+					class="block p-1.5 border border-gray-300 rounded-md text-gray-700 font-medium text-xs sm:text-sm hover:border-blue-500 transition-colors duration-200 ease-in-out
+					peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700">电子</span>
+			</label>
+			<label class="item cursor-pointer">
+				<input class="hidden peer" name="ReportMaterial" type="radio" value="1">
+				<span
+					class="block p-1.5 border border-gray-300 rounded-md text-gray-700 font-medium text-xs sm:text-sm hover:border-blue-500 transition-colors duration-200 ease-in-out
+					peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700">纸质</span>
+			</label>
+		</div>
+	</div>
+
+	<div class="mb-4">
+		<label class="block text-gray-700 text-sm mb-1 flex items-center">锣边外形公差</label>
+		<div class="flex flex-wrap gap-1" id="GongBoundaryTolerance">
+			<label class="item cursor-pointer">
+				<input class="hidden peer" name="GongBoundaryTolerance" type="radio" value="0" checked="checked">
+				<span
+					class="block p-1.5 border border-gray-300 rounded-md text-gray-700 font-medium text-xs sm:text-sm hover:border-blue-500 transition-colors duration-200 ease-in-out
+						peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700">普锣±0.2mm</span>
+			</label>
+			<label class="item cursor-pointer">
+				<input class="hidden peer" name="GongBoundaryTolerance" type="radio" value="1">
+				<span
+					class="block p-1.5 border border-gray-300 rounded-md text-gray-700 font-medium text-xs sm:text-sm hover:border-blue-500 transition-colors duration-200 ease-in-out
+						peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700">精锣±0.1mm</span>
+			</label>
+		</div>
+	</div>
+
+	<div class="mb-4">
+		<label class="block text-gray-700 text-sm mb-1 flex items-center">板面外观要求</label>
+		<div class="flex flex-wrap gap-1" id="PanelAppearanceRequire">
+			<label class="item cursor-pointer">
+				<input class="hidden peer" name="PanelAppearanceRequire" type="radio" value="0" checked="checked">
+				<span
+					class="block p-1.5 border border-gray-300 rounded-md text-gray-700 font-medium text-xs sm:text-sm hover:border-blue-500 transition-colors duration-200 ease-in-out
+						peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700">IPC二级</span>
+			</label>
+			<label class="item cursor-pointer">
+				<input class="hidden peer" name="PanelAppearanceRequire" type="radio" value="1">
+				<span
+					class="block p-1.5 border border-gray-300 rounded-md text-gray-700 font-medium text-xs sm:text-sm hover:border-blue-500 transition-colors duration-200 ease-in-out
+						peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700">极致外观</span>
+			</label>
+		</div>
+	</div>
+
+	<div class="mb-4">
+		<label class="block text-gray-700 text-sm mb-1 flex items-center">隔白纸</label>
+		<div class="flex flex-wrap gap-1" id="WhitePaperService">
+			<label class="item cursor-pointer">
+				<input class="hidden peer" name="WhitePaperService" type="radio" value="0" checked="checked">
+				<span
+					class="block p-1.5 border border-gray-300 rounded-md text-gray-700 font-medium text-xs sm:text-sm hover:border-blue-500 transition-colors duration-200 ease-in-out
+						peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700">不隔纸</span>
+			</label>
+			<label class="item cursor-pointer">
+				<input class="hidden peer" name="WhitePaperService" type="radio" value="1">
+				<span
+					class="block p-1.5 border border-gray-300 rounded-md text-gray-700 font-medium text-xs sm:text-sm hover:border-blue-500 transition-colors duration-200 ease-in-out
+						peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700">隔纸</span>
+			</label>
+		</div>
+	</div>
+
+	<div class="mb-4">
+		<label class="block text-gray-700 text-sm mb-1 flex items-center">生产编号</label>
+		<div class="flex flex-wrap gap-1" id="IsNoneFont">
+			<label class="item cursor-pointer">
+				<input class="hidden peer" name="IsNoneFont" type="radio" value="0" checked="checked">
+				<span
+					class="block p-1.5 border border-gray-300 rounded-md text-gray-700 font-medium text-xs sm:text-sm hover:border-blue-500 transition-colors duration-200 ease-in-out
+						peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700">加生产编号</span>
+			</label>
+			<label class="item cursor-pointer">
+				<input class="hidden peer" name="IsNoneFont" type="radio" value="1">
+				<span
+					class="block p-1.5 border border-gray-300 rounded-md text-gray-700 font-medium text-xs sm:text-sm hover:border-blue-500 transition-colors duration-200 ease-in-out
+						peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700">不加生产编号</span>
+			</label>
+		</div>
+	</div>
+</div>
+
+<div class="bg-white rounded-lg shadow-md p-4 sm:p-6 max-w-4xl mx-auto mt-2">
+	<div class="flex justify-between items-center mb-4 border-b pb-2">
+		<h2 class="text-lg sm:text-xl font-semibold text-gray-800">操作</h2>
+	</div>
+
+	<div>
+		<button
+			class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-200 ease-in-out"
+			id="submitOrder">
+			前往下单
+		</button>
+		<button
+			class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-200 ease-in-out"
+			id="savePreset">
+			保存预设
+		</button>
+		<button
+			class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors duration-200 ease-in-out"
+			id="deletePreset">
+			删除预设
+		</button>
+	</div>
+</div>
+
+<script>
+
+	const boardLayersOptions = {
+		fr4Item: ['1', '2', '4', '6', '8', '10', '12', '14', '16', '18', '20', '22', '24', '26', '28', '30', '32'],
+		aluminumItem: ['1', '2'],
+		copperItem: ['1', '2', '4'],
+		rogersItem: {
+			'1': ['2', '4', '6', '8'],
+			'2': ['4', '6', '8']
+		},
+		hdiItem: {
+			'1': ['4', '6', '8', '10', '12', '14', '16', '18', '20'],
+			'2': ['6', '8', '10', '12', '14', '16', '18', '20'],
+			'3': ['8', '10', '12', '14', '16', '18', '20']
+		},
+		cem1Item: ['1'],
+		'22fItem': ['1'],
+		fr1Item: ['1'],
+		cem3Item: ['1']
+	};
+
+	const aluminumTypeOptions = {
+		aluminumItem: [['1', '(1)a', 'FR-4+铝基混压,铝基材在底层'], ['2', '(2)a', '芯板为铝材,顶底层为走线']],
+		copperItem: [['3', '(3)a', 'FR-4+铜基混压,铜基材在底层'], ['4', '(4)a', '芯板为铜基,顶底层为走线']],
+	}
+
+	const boardThicknessOptions = {
+		fr4Item: {
+			'1': ['0.6', '0.8', '1.0', '1.2', '1.6', '2.0'],
+			'2': ['0.4', '0.6', '0.8', '1.0', '1.2', '1.6', '2.0', '2.4', '3.0', '3.6', '4.0'],
+			'4': ['0.4', '0.6', '0.8', '1.0', '1.2', '1.6', '2.0', '2.4', '2.5', '3.0', '3.2'],
+			'6': ['0.8', '1.0', '1.2', '1.6', '2.0', '2.5', '3.0'],
+			'8': ['1.2', '1.6', '2.0', '2.5'],
+			'10': ['1.2', '1.6', '2.0', '2.5'],
+			'12': ['1.6', '2.0', '2.5'],
+			'14': ['1.6', '2.0', '2.5', '3.0'],
+			'16': ['2.0', '2.5', '3.0', '3.2'],
+			'18': ['2.0', '2.5', '3.0', '3.2'],
+			'20': ['2.0', '2.5', '3.0', '3.2'],
+			'22': ['2.5', '3.0', '3.2'],
+			'24': ['2.5', '3.0', '3.2'],
+			'26': ['2.5', '3.0', '3.2'],
+			'28': ['2.5', '3.0', '3.2'],
+			'30': ['2.5', '3.0', '3.2'],
+			'32': ['2.5', '3.0', '3.2'],
+		},
+		aluminumItem: {
+			'1': ['0.4', '0.6', '0.8', '1.0', '1.2', '1.6', '2.0', '2.5', '3.0'],
+			'2': ['0.8', '1.0', '1.2', '1.6', '2.0'],
+		},
+		copperItem: {
+			'1': ['1.0', '1.2', '1.5', '1.6', '2.0'],
+			'2': ['1.0', '1.2', '1.5', '1.6', '2.0'],
+			'4': ['1.0', '1.2', '1.5', '1.6', '2.0'],
+		},
+		rogersItem: {
+			'1': {
+				'2': ['0.203', '0.254', '0.305', '0.335', '0.406', '0.422', '0.508', '0.762', '0.813', '1.524'],
+				'4': ['0.4', '0.6', '0.8', '1.0', '1.2', '1.6', '2.0', '2.4'],
+				'6': ['1.0', '1.2', '1.6', '2.0', '2.4'],
+				'8': ['1.0', '1.2', '1.6', '2.0', '2.4', '3.0']
+			},
+			'2': {
+				'4': ['0.4', '0.6', '0.8', '1.0', '1.2', '1.6', '2.0', '2.4'],
+				'6': ['1.0', '1.2', '1.6', '2.0', '2.4'],
+				'8': ['1.0', '1.2', '1.6', '2.0', '2.4', '3.0']
+			}
+		},
+		hdiItem: {
+			'1': {
+				'4': ['0.6', '0.8', '1.0', '1.2', '1.6', '2.0'],
+				'6': ['0.8', '1.0', '1.2', '1.6', '2.0', '2.4', '2.5'],
+				'8': ['1.0', '1.2', '1.6', '2.0', '2.4', '2.5'],
+				'10': ['1.2', '1.6', '2.0', '2.4', '2.5'],
+				'12': ['1.6', '2.0', '2.4', '2.5'],
+				'14': ['1.6', '2.0', '2.4', '2.5', '3.0'],
+				'16': ['2.0', '2.4', '2.5', '3.0', '3.2'],
+				'18': ['2.0', '2.4', '2.5', '3.0', '3.2'],
+				'20': ['2.0', '2.4', '2.5', '3.0', '3.2']
+			},
+			'2': {
+				'6': ['0.8', '1.0', '1.2', '1.6', '2.0', '2.4', '2.5'],
+				'8': ['1.0', '1.2', '1.6', '2.0', '2.4', '2.5'],
+				'10': ['1.2', '1.6', '2.0', '2.4', '2.5'],
+				'12': ['1.6', '2.0', '2.4', '2.5'],
+				'14': ['1.6', '2.0', '2.4', '2.5', '3.0'],
+				'16': ['2.0', '2.4', '2.5', '3.0', '3.2'],
+				'18': ['2.0', '2.4', '2.5', '3.0', '3.2'],
+				'20': ['2.0', '2.4', '2.5', '3.0', '3.2']
+			},
+			'3': {
+				'8': ['1.0', '1.2', '1.6', '2.0', '2.4', '2.5'],
+				'10': ['1.2', '1.6', '2.0', '2.4', '2.5'],
+				'12': ['1.6', '2.0', '2.4', '2.5'],
+				'14': ['1.6', '2.0', '2.4', '2.5', '3.0'],
+				'16': ['2.0', '2.4', '2.5', '3.0', '3.2'],
+				'18': ['2.0', '2.4', '2.5', '3.0', '3.2'],
+				'20': ['2.0', '2.4', '2.5', '3.0', '3.2']
+			}
+		},
+		cem1Item: {
+			'1': ['1.0', '1.2', '1.6']
+		},
+		'22fItem': {
+			'1': ['1.0', '1.2', '1.6']
+		},
+		fr1Item: {
+			'1': ['1.0', '1.2', '1.6']
+		},
+		cem3Item: {
+			'1': ['1.0', '1.2']
+		}
+	}
+
+	const copperThicknessOptions = {
+		fr4Item: {
+			'1': ['1', '2'],
+			'2': ['1', '1.5', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15'],
+			'4': ['1', '2', '3', '4', '5', '6', '7', '8'],
+			'6': ['1', '2', '3', '4'],
+			'8': ['1', '2'],
+			'10': ['1', '2'],
+			'12': ['1', '2'],
+			'14': ['1', '2'],
+			'16': ['1', '2'],
+			'18': ['1', '2'],
+			'20': ['1', '2'],
+			'22': ['1', '2'],
+			'24': ['1', '2'],
+			'26': ['1', '2'],
+			'28': ['1', '2'],
+			'30': ['1', '2'],
+			'32': ['1', '2']
+		},
+		aluminumItem: {
+			'1': ['0.4', '0.5', '0.75', '1', '2', '3'],
+			'2': ['1']
+		},
+		copperItem: {
+			'1': ['1', '2', '3', '4', '5'],
+			'2': ['1', '2'],
+			'4': ['1', '2']
+		},
+		rogersItem: {
+			'1': {
+				'2': ['1', '2'],
+				'4': ['1', '2'],
+				'6': ['1', '2'],
+				'8': ['1', '2']
+			},
+			'2': {
+				'4': ['1', '2'],
+				'6': ['1', '2'],
+				'8': ['1', '2']
+			}
+		},
+		hdiItem: {
+			'1': {
+				'4': ['1', '2']
+			},
+			'2': {
+				'6': ['1', '2']
+			},
+			'3': {
+				'8': ['1', '2']
+			}
+		},
+		cem1Item: {
+			'1': ['1']
+		},
+		'22fItem': {
+			'1': ['0.75']
+		},
+		fr1Item: {
+			'1': ['0.75', '1']
+		},
+		cem3Item: {
+			'1': ['0.5']
+		}
+	}
+
+	const innerCopperThicknessOptions = {
+		fr4Item: {
+			'4': ['0.5', '1', '2', '3', '4'],
+			'6': ['0.5', '1', '2', '3', '4'],
+			'8': ['0.5', '1', '2'],
+			'10': ['0.5', '1', '2'],
+			'12': ['0.5', '1'],
+			'14': ['0.5', '1'],
+			'16': ['0.5', '1'],
+			'18': ['0.5', '1'],
+			'20': ['0.5', '1'],
+			'22': ['0.5', '1'],
+			'24': ['0.5', '1'],
+			'26': ['0.5', '1'],
+			'28': ['0.5', '1'],
+			'30': ['0.5', '1'],
+			'32': ['0.5', '1']
+		},
+		aluminumItem: {},
+		copperItem: {
+			'4': ['1', '2']
+		},
+		rogersItem: {
+			'1': {
+				'4': ['1']
+			},
+			'2': {
+				'4': ['1']
+			}
+		},
+		hdiItem: {
+			'1': {
+				'4': ['0.5', '1']
+			},
+			'2': {
+				'6': ['0.5', '1']
+			},
+			'3': {
+				'8': ['0.5', '1']
+			}
+		},
+		cem1Item: {},
+		'22fItem': {},
+		fr1Item: {},
+		cem3Item: {}
+	}
+
+	const solderColorOptions = {
+		fr4Item: [['green', '绿色', '#007606'], ['white', '冷白色', '#fff'], ['blue', '蓝色', '#0943c8'], ['black', '黑色', '#111'], ['yellow', '黄色', '#ffde00'], ['red', '红色', '#c81609'], ['matteblack', '哑光黑', '#333'], ['mattegreen', '哑光绿', '#46c017'], ['purple', '紫色', 'purple'], ['none', '无', 'url(\'/iframe/img/none_color.svg\') center']],
+		aluminumItem: [['green', '绿色', '#007606'], ['white', '冷白色', '#fff'], ['warmwhite', '暖白色', '#fffbd6'], ['whitesfr6ks', '高反白色', '#fff'], ['black', '黑色', '#111'], ['purple', '紫色', 'purple']],
+		copperItem: [['warmwhite', '暖白色', '#fffbd6'], ['black', '黑色', '#111'], ['matteblack', '哑光黑', '#333']],
+		rogersItem: [['green', '绿色', '#007606'], ['white', '冷白色', '#fff'], ['blue', '蓝色', '#0943c8'], ['black', '黑色', '#111'], ['yellow', '黄色', '#ffde00'], ['red', '红色', '#c81609'], ['matteblack', '哑光黑', '#333'], ['mattegreen', '哑光绿', '#46c017'], ['none', '无', 'url(\'/iframe/img/none_color.svg\') center']],
+		hdiItem: [['green', '绿色', '#007606'], ['white', '冷白色', '#fff'], ['blue', '蓝色', '#0943c8'], ['black', '黑色', '#111'], ['yellow', '黄色', '#ffde00'], ['red', '红色', '#c81609'], ['matteblack', '哑光黑', '#333'], ['mattegreen', '哑光绿', '#46c017'], ['none', '无', 'url(\'/iframe/img/none_color.svg\') center']],
+		cem1Item: [['green', '绿色', '#007606'], ['white', '冷白色', '#fff'], ['blue', '蓝色', '#0943c8'], ['black', '黑色', '#111'], ['yellow', '黄色', '#ffde00'], ['red', '红色', '#c81609'], ['matteblack', '哑光黑', '#333'], ['mattegreen', '哑光绿', '#46c017'], ['none', '无', 'url(\'/iframe/img/none_color.svg\') center']],
+		'22fItem': [['green', '绿色', '#007606'], ['white', '冷白色', '#fff'], ['blue', '蓝色', '#0943c8'], ['black', '黑色', '#111'], ['yellow', '黄色', '#ffde00'], ['red', '红色', '#c81609'], ['matteblack', '哑光黑', '#333'], ['mattegreen', '哑光绿', '#46c017'], ['none', '无', 'url(\'/iframe/img/none_color.svg\') center']],
+		fr1Item: [['green', '绿色', '#007606'], ['white', '冷白色', '#fff'], ['blue', '蓝色', '#0943c8'], ['black', '黑色', '#111'], ['red', '红色', '#c81609'], ['matteblack', '哑光黑', '#333'], ['none', '无', 'url(\'/iframe/img/none_color.svg\') center']],
+		cem3Item: [['green', '绿色', '#007606'], ['white', '冷白色', '#fff'], ['black', '黑色', '#111'], ['none', '无', 'url(\'/iframe/img/none_color.svg\') center']]
+	}
+
+	const fontColorOptions = {
+		fr4Item: [['white', '白色', '#fff'], ['black', '黑色', '#111'], ['none', '无', 'url(\'/iframe/img/none_color.svg\') center']],
+		aluminumItem: [['white', '白色', '#fff'], ['black', '黑色', '#111'], ['hollowout', '镂空字符', 'transport'], ['none', '无', 'url(\'/iframe/img/none_color.svg\') center']],
+		copperItem: [['white', '白色', '#fff'], ['black', '黑色', '#111'], ['none', '无', 'url(\'/iframe/img/none_color.svg\') center']],
+		rogersItem: [['white', '白色', '#fff'], ['black', '黑色', '#111'], ['none', '无', 'url(\'/iframe/img/none_color.svg\') center']],
+		hdiItem: [['white', '白色', '#fff'], ['black', '黑色', '#111'], ['none', '无', 'url(\'/iframe/img/none_color.svg\') center']],
+		cem1Item: [['white', '白色', '#fff'], ['black', '黑色', '#111'], ['none', '无', 'url(\'/iframe/img/none_color.svg\') center']],
+		'22fItem': [['white', '白色', '#fff'], ['black', '黑色', '#111'], ['none', '无', 'url(\'/iframe/img/none_color.svg\') center']],
+		fr1Item: [['white', '白色', '#fff'], ['black', '黑色', '#111'], ['none', '无', 'url(\'/iframe/img/none_color.svg\') center']],
+		cem3Item: [['white', '白色', '#fff'], ['black', '黑色', '#111'], ['none', '无', 'url(\'/iframe/img/none_color.svg\') center']]
+	}
+
+	const invoiceOptions = {
+		aluminumItem: [['1', '1.0W'], ['2', '1.5W'], ['3', '2.0W'], ['4', '3.0W'], ['5', '5.0W'], ['6', '8.0W']],
+		copperItem: [['380', '380W'], ['3', '2.0W'], ['4', '3.0W'], ['5', '5.0W'], ['6', '8.0W']]
+	}
+
+	const lineWeightOptions = {
+		fr4Item: ['3', '3.5', '4', '5', '6', '8', '10', '20'],
+		aluminumItem: ['5', '10', '16', '20'],
+		copperItem: ['4', '5', '10', '20'],
+		rogersItem: ['3', '3.5', '4', '5', '6', '8', '10', '20'],
+		hdiItem: ['3', '3.5', '4', '5', '6', '8', '10', '20'],
+		cem1Item: ['4', '5', '6', '8', '10', '20'],
+		'22fItem': ['3', '3.5', '4', '5', '6', '8', '10', '20'],
+		fr1Item: ['8', '10', '20'],
+		cem3Item: ['20']
+	}
+
+	const viasOptions = {
+		fr4Item: ['0.15', '0.2', '0.25', '0.3', '0.35', '0.4', '0.5', '0.6', '0.7', '0.8'],
+		aluminumItem: ['1.0', '1.2', '1.5'],
+		copperItem: ['1.2', '1.5'],
+		rogersItem: ['0.15', '0.2', '0.25', '0.3', '0.35', '0.4', '0.5', '0.6', '0.7', '0.8'],
+		hdiItem: ['0.15', '0.2', '0.25', '0.3', '0.35', '0.4', '0.5', '0.6', '0.7', '0.8', '1.0', '1.2', '1.5'],
+		cem1Item: ['0.3', '0.35', '0.4', '0.5', '0.6', '0.7', '0.8'],
+		'22fItem': ['0.3', '0.35', '0.4', '0.5', '0.6', '0.7', '0.8'],
+		fr1Item: ['0.8'],
+		cem3Item: ['0.8']
+	}
+
+	const solderCoverOptions = {
+		fr4Item: [['converoil', '过孔盖油'], ['plugoil', '过孔塞油(连塞带印)'], ['aluminumplughole', '过孔塞油(铝片塞)'], ['openwindow', '过孔开窗'], ['resinplughole', '树脂塞孔']],
+		rogersItem: [['converoil', '过孔盖油'], ['aluminumplughole', '过孔塞油(铝片塞)'], ['openwindow', '过孔开窗'], ['resinplughole', '树脂塞孔']],
+	}
+
+	const flyingProbeOptions = {
+		fr4Item: [['full', '100%飞针测试'], ['teststand', '工程测试架']],
+		aluminumItem: [['aoi', '100%AOI'], ['full', '100%飞针测试'], ['teststand', '工程测试架']],
+		copperItem: [['aoi', '100%AOI'], ['full', '100%飞针测试'], ['teststand', '工程测试架']],
+		rogersItem: [['full', '100%飞针测试'], ['teststand', '工程测试架']],
+		hdiItem: [['full', '100%飞针测试'], ['lowresistancetest', '四线低阻测试'], ['teststand', '工程测试架']],
+		cem1Item: [['aoi', '100%AOI'], ['teststand', '工程测试架']],
+		'22fItem': [['aoi', '100%AOI']],
+		fr1Item: [['aoi', '100%AOI'], ['teststand', '工程测试架']],
+		cem3Item: [['aoi', '100%AOI'], ['teststand', '工程测试架']]
+	}
+
+	const surfaceFinishOptions = {
+		fr4Item: [['none', '裸铜'], ['haslwithlead', '有铅喷锡'], ['haslwithfree', '无铅喷锡'], ['immersiongold', '沉金'], ['osp', 'OSP'], ['immersiontin', '沉锡'], ['immersionsilver', '沉银'], ['hardgold', '电镀金'], ['eletrolyticnickelgod', '化学镍钯金'], ['immersiongoldandosp', '沉金+选择性OSP'], ['haslwithfreeandimmersiongold', '无铅喷锡+选择性沉金'], ['haslwithfreeandhardgold', '无铅喷锡+选择性电镀金']],
+		aluminumItem: [['none', '裸铜'], ['haslwithlead', '有铅喷锡'], ['haslwithfree', '无铅喷锡'], ['immersiongold', '沉金'], ['osp', 'OSP']],
+		copperItem: [['haslwithfree', '无铅喷锡'], ['immersiongold', '沉金'], ['osp', 'OSP'], ['immersiontin', '沉锡']],
+		rogersItem: [['immersiongold', '沉金'], ['osp', 'OSP'], ['immersiontin', '沉锡'], ['immersionsilver', '沉银']],
+		hdiItem: [['none', '裸铜'], ['haslwithlead', '有铅喷锡'], ['haslwithfree', '无铅喷锡'], ['immersiongold', '沉金'], ['osp', 'OSP']],
+		cem1Item: [['haslwithlead', '有铅喷锡'], ['haslwithfree', '无铅喷锡'], ['osp', 'OSP']],
+		'22fItem': [['osp', 'OSP']],
+		fr1Item: [['osp', 'OSP']],
+		cem3Item: [['osp', 'OSP']]
+	}
+</script>
+
+<script>
+	document.addEventListener('DOMContentLoaded', () => {
+		setupRadioGroup('proCategory', 'proCategory', 'fr4Item', updateBoardCraft);
+		updateBoardCraft(document.getElementById('proCategory').getValue());
+		setupRadioGroup('BoardLayers', 'BoardLayers', '2');
+		setupRadioGroup('OrderStage', 'OrderStage', '0');
+		setupRadioGroup('BoardType', 'BoardType', 'pcs');
+
+		document.getElementById('MixedCategory').addEventListener('change', () => {
+			updateBoardCraft(document.getElementById('proCategory').getValue());
+		});
+		document.getElementById('HDIBuilds').addEventListener('change', () => {
+			updateBoardCraft(document.getElementById('proCategory').getValue());
+		});
+		document.getElementById('BoardLayers').addEventListener('change', () => {
+			updateBoardCraft(document.getElementById('proCategory').getValue());
+		});
+		document.getElementById('SurfaceFinish').addEventListener('change', () => {
+			const selectedSurfaceFinish = document.getElementById('SurfaceFinish').getValue();
+			if (selectedSurfaceFinish === 'immersiongold') {
+				document.getElementById('ImGoldThinckness-container').style.display = 'block';
+			} else {
+				document.getElementById('ImGoldThinckness-container').style.display = 'none';
+			}
+		});
+
+
+		// Function to calculate and update total area
+		function updateTotalArea() {
+			const boardHeight = parseFloat(document.getElementById('BoardHeight').value);
+			const boardWidth = parseFloat(document.getElementById('BoardWidth').value);
+			const num = parseInt(document.getElementById('num').value);
+
+			if (!isNaN(boardHeight) && !isNaN(boardWidth) && !isNaN(num)) {
+				// Convert cm² to m² (1 m² = 10000 cm²)
+				const totalAreaValue = (boardHeight * boardWidth * num / 10000).toFixed(3);
+				document.getElementById('totalArea').textContent = `${totalAreaValue}m²`;
+			} else {
+				document.getElementById('totalArea').textContent = '0.000m²'; // Default or error state
+			}
+		}
+
+		// Add event listeners to input fields to update total area dynamically
+		document.getElementById('BoardHeight').addEventListener('input', updateTotalArea);
+		document.getElementById('BoardWidth').addEventListener('input', updateTotalArea);
+		document.getElementById('num').addEventListener('input', updateTotalArea);
+
+		// Initial calculation for total area on page load
+		updateTotalArea();
+
+	});
+
+	// 点击 submitOrder 按钮时的事件处理
+	document.getElementById('submitOrder').addEventListener('click', () => {
+		// 获取各个选项的值
+		const proCategory = document.querySelector('input[name="proCategory"]:checked').value;
+		const mixedCategory = document.querySelector('input[name="MixedCategory"]:checked')?.value || '';
+		const hdiBuilds = document.querySelector('input[name="HDIBuilds"]:checked')?.value || '';
+		const boardLayers = document.querySelector('input[name="BoardLayers"]:checked').value;
+		const boardHeight = document.getElementById('BoardHeight').value;
+		const boardWidth = document.getElementById('BoardWidth').value;
+		const num = document.getElementById('num').value;
+		const boardType = document.querySelector('input[name="BoardType"]:checked').value;
+		const orderStage = document.querySelector('input[name="OrderStage"]:checked').value;
+		const boardThickness = document.querySelector('input[name="BoardThickness"]:checked')?.value || '';
+		const CopperThickness = document.querySelector('input[name="CopperThickness"]:checked')?.value || '';
+		const innerCopperThickness = document.querySelector('input[name="InnerCopperThickness"]:checked')?.value || '';
+		const aluminumType = document.querySelector('input[name="AluminumType"]:checked')?.value || '';
+		const solderColor = document.querySelector('input[name="SolderColor"]:checked')?.value || '';
+		const fontColor = document.querySelector('input[name="FontColor"]:checked')?.value || '';
+		const invoice = document.querySelector('input[name="Invoice"]:checked')?.value || '';
+		const lineWeight = document.querySelector('input[name="LineWeight"]:checked')?.value || '';
+		const vias = document.querySelector('input[name="Vias"]:checked')?.value || '';
+		const solderCover = document.querySelector('input[name="SolderCover"]:checked')?.value || '';
+		const flyingProbe = document.querySelector('input[name="FlyingProbe"]:checked')?.value || '';
+		const surfaceFinish = document.querySelector('input[name="SurfaceFinish"]:checked')?.value || '';
+		const imGoldThinckness = document.querySelector('input[name="ImGoldThinckness"]:checked')?.value || '';
+		const halfHole = document.querySelector('input[name="HalfHole"]:checked')?.value || '';
+		const holeThickness = document.querySelector('input[name="HoleThickness"]:checked')?.value || '';
+		const WithstandVoltage = document.querySelector('input[name="WithstandVoltage"]:checked')?.value || '';
+		const impedanceSize = document.querySelector('input[name="ImpedanceSize"]:checked')?.value || '';
+
+		/* 个性服务参数 */
+		const QualityCompensation = document.querySelector('input[name="QualityCompensation"]:checked')?.value || '';
+		const LowResistanceTest = document.querySelector('input[name="LowResistanceTest"]:checked')?.value || '';
+		const ProductFileSure = document.querySelector('input[name="ProductFileSure"]:checked')?.value || '';
+		const ReportMaterial = document.querySelector('input[name="ReportMaterial"]:checked')?.value || '';
+		const GongBoundaryTolerance = document.querySelector('input[name="GongBoundaryTolerance"]:checked')?.value || '';
+		const PanelAppearanceRequire = document.querySelector('input[name="PanelAppearanceRequire"]:checked')?.value || '';
+		const WhitePaperService = document.querySelector('input[name="WhitePaperService"]:checked')?.value || '';
+		const IsNoneFont = document.querySelector('input[name="IsNoneFont"]:checked')?.value || '';
+
+		// 拼接 url：https://www.jiepei.com/pcb/pcbquote?proCategory=fr4Item&BoardHeight=10&BoardWidth=10&num=4&BoardLayers=2&BoardType=set&BoardThickness=2
+
+		let url =
+			`https://www.jiepei.com/pcb/pcbquote?proCategory=${encodeURIComponent(proCategory)}&BoardHeight=${encodeURIComponent(boardHeight)}&BoardWidth=${encodeURIComponent(boardWidth)}&num=${encodeURIComponent(num)}&BoardLayers=${encodeURIComponent(boardLayers)}&BoardType=${encodeURIComponent(boardType)}&OrderStage=${encodeURIComponent(orderStage)}`;
+
+		url += mixedCategory ? `&MixedCategory=${encodeURIComponent(mixedCategory)}` : '';
+		url += hdiBuilds ? `&HDIBuilds=${encodeURIComponent(hdiBuilds)}` : '';
+		url += boardThickness ? `&BoardThickness=${encodeURIComponent(boardThickness)}` : '';
+		url += CopperThickness ? `&CopperThickness=${encodeURIComponent(CopperThickness)}` : '';
+		url += innerCopperThickness ? `&InnerCopperThickness=${encodeURIComponent(innerCopperThickness)}` : '';
+		url += aluminumType ? `&AluminumType=${encodeURIComponent(aluminumType)}` : '';
+		url += solderColor ? `&SolderColor=${encodeURIComponent(solderColor)}` : '';
+		url += fontColor ? `&FontColor=${encodeURIComponent(fontColor)}` : '';
+		url += invoice ? `&Invoice=${encodeURIComponent(invoice)}` : '';
+		url += lineWeight ? `&LineWeight=${encodeURIComponent(lineWeight)}` : '';
+		url += vias ? `&Vias=${encodeURIComponent(vias)}` : '';
+		url += solderCover ? `&SolderCover=${encodeURIComponent(solderCover)}` : '';
+		url += flyingProbe ? `&FlyingProbe=${encodeURIComponent(flyingProbe)}` : '';
+		url += surfaceFinish ? `&SurfaceFinish=${encodeURIComponent(surfaceFinish)}` : '';
+		url += imGoldThinckness ? `&ImGoldThinckness=${encodeURIComponent(imGoldThinckness)}` : '';
+		url += halfHole ? `&HalfHole=${encodeURIComponent(halfHole)}` : '';
+		url += holeThickness ? `&HoleThickness_=${encodeURIComponent(holeThickness)}` : '';
+		url += WithstandVoltage ? `&WithstandVoltage=${encodeURIComponent(WithstandVoltage)}` : '';
+		url += impedanceSize ? `&ImpedanceSize=${encodeURIComponent(impedanceSize)}` : '';
+		url += QualityCompensation ? `&QualityCompensation=${encodeURIComponent(QualityCompensation)}` : '';
+		url += LowResistanceTest ? `&LowResistanceTest=${encodeURIComponent(LowResistanceTest)}` : '';
+		url += ProductFileSure ? `&ProductFileSure=${encodeURIComponent(ProductFileSure)}` : '';
+		url += ReportMaterial ? `&ReportMaterial=${encodeURIComponent(ReportMaterial)}` : '';
+		url += GongBoundaryTolerance ? `&GongBoundaryTolerance=${encodeURIComponent(GongBoundaryTolerance)}` : '';
+		url += PanelAppearanceRequire ? `&PanelAppearanceRequire=${encodeURIComponent(PanelAppearanceRequire)}` : '';
+		url += WhitePaperService ? `&WhitePaperService=${encodeURIComponent(WhitePaperService)}` : '';
+		url += IsNoneFont ? `&IsNoneFont=${encodeURIComponent(IsNoneFont)}` : '';
+
+		// 打开新窗口
+		// window.open(url, '_blank');
+		dialog('注意', '下单前务必仔细检查所有项目是否符合预期，捷配官网可能与本扩展显示存在出入，本扩展不对工艺组合可行性进行验证，以捷配官网为准。\n点击确定前往捷配下单。', `window.open('${url}', '_blank')`);
+	});
+
+	document.getElementById('selectBoard').addEventListener('click', () => {
+		eda.sys_Message.showToastMessage("在画布上选择板框将自动识别板子大小", 'info');
+		eda.pcb_Event.addMouseEventListener(
+			'1',
+			'selected',
+			async () => {
+				new Promise(resolve => setTimeout(() => resolve(), 500))
+					.then(
+						async () => {
+							const selectedPrimitives = await eda.pcb_SelectControl.getAllSelectedPrimitives();
+							console.log(selectedPrimitives);
+							if (selectedPrimitives.length === 1) {
+								if (selectedPrimitives[0].regionName === "Board Outline") {
+									console.log(selectedPrimitives[0]);
+									const BBox = await eda.pcb_Primitive.getPrimitivesBBox([selectedPrimitives[0].getState_PrimitiveId()]);
+									const boardHeight = eda.sys_Unit.milToMm(BBox.maxY - BBox.minY - 10) / 10;
+									const boardWidth = eda.sys_Unit.milToMm(BBox.maxX - BBox.minX - 10) / 10;
+									document.getElementById('BoardHeight').value = boardHeight;
+									document.getElementById('BoardWidth').value = boardWidth;
+									eda.sys_Message.showToastMessage("已自动识别板子大小", 'success');
+								} else {
+									eda.sys_Message.showToastMessage("所选图元非板框", 'error');
+								}
+							} else if (selectedPrimitives.length === 0) {
+								eda.sys_Message.showToastMessage("未选择任何图元", 'error');
+							} else {
+								eda.sys_Message.showToastMessage("仅支持选择单个图元", 'error');
+							}
+						}
+					);
+			},
+			true
+		);
+	});
+
+	function dialog(title, content, cmd) {
+		// tailwind css 实现，带半透明背景
+		let dialogHtml = `
+			<div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity z-50" id="dialogOverlay">
+				<div class="flex items-center justify-center min-h-screen">
+					<div class="bg-white rounded-lg shadow-lg p-6 max-w-md w-full">
+						<h2 class="text-xl font-semibold mb-4">${title}</h2>
+						<p>${content}</p>
+						<div class="mt-4 flex justify-end">`;
+		dialogHtml += cmd ? `
+							<button class="bg-blue-500 text-white px-4 py-2 rounded mr-2" onclick="${cmd + '; document.getElementById(\'dialogOverlay\').remove();'}">确定</button>
+						` : '';
+		dialogHtml += `
+							<button class="bg-gray-300 px-4 py-2 rounded" onclick="document.getElementById('dialogOverlay').remove()">取消</button>
+						</div>
+					</div>
+				</div>
+			</div>`;
+		document.body.insertAdjacentHTML('beforeend', dialogHtml);
+	}
+</script>
+
+<script>
+	function setupRadioGroup(containerId, radioName, initialValue = null, onChangeCallback = null) {
+		const container = document.getElementById(containerId);
+		if (!container) {
+			console.warn(`Container with ID '${containerId}' not found.`);
+			return;
+		}
+
+		const radios = container.querySelectorAll(`input[type="radio"][name="${radioName}"]`);
+
+		console.log(`Setting up radio group: ${radioName} with initial value: ${initialValue}`);
+
+		// Set initial selection
+		if (initialValue) {
+			const initialRadio = Array.from(radios).find(radio => radio.value === initialValue);
+			if (initialRadio) {
+				initialRadio.checked = true;
+			}
+		} else if (radios.length > 0 && !container.querySelector(`input[name="${radioName}"]:checked`)) {
+			// If no initialValue and no radio is checked, check the first one by default
+			radios[0].checked = true;
+		}
+
+		// Attach event listener for changes
+		container.addEventListener('change', (event) => {
+			if (event.target.type === 'radio' && event.target.name === radioName) {
+				if (onChangeCallback) {
+					onChangeCallback(event.target.value);
+				}
+			}
+		});
+
+		// Attach a method to the container to easily get the selected value
+		container.getValue = () => {
+			const selectedRadio = container.querySelector(`input[name="${radioName}"]:checked`);
+			return selectedRadio ? selectedRadio.value : null;
+		};
+	}
+
+	function updateBoardCraft(selectedCategory) {
+		const boardLayersContainer = document.getElementById('BoardLayers');
+		const aluminumTypeContainer = document.getElementById('AluminumType');
+		const boardThicknessContainer = document.getElementById('BoardThickness');
+		const copperThicknessContainer = document.getElementById('CopperThickness');
+		const innerCopperThicknessContainer = document.getElementById('InnerCopperThickness');
+		const solderColorContainer = document.getElementById('SolderColor');
+		const fontColorContainer = document.getElementById('FontColor');
+		const invoiceContainer = document.getElementById('Invoice');
+		const lineWeightContainer = document.getElementById('LineWeight');
+		const viasContainer = document.getElementById('Vias');
+		const solderCoverContainer = document.getElementById('SolderCover');
+		const flyingProbeContainer = document.getElementById('FlyingProbe');
+		const surfaceFinishContainer = document.getElementById('SurfaceFinish');
+		const selectedMixedCategory = document.querySelector('input[name="MixedCategory"]:checked')?.value || '1';
+		const selectedHDIBuilds = document.querySelector('input[name="HDIBuilds"]:checked')?.value || '1';
+		let selectedLayer = '2';
+		let selectedAluminumType = '1';
+		let selectedBoardThickness = '1.6';
+		let selectedCopperThickness = '1';
+		let selectedInnerCopperThickness = '0.5';
+		let selectedSolderColor = 'green';
+		let selectedFontColor = 'white';
+		let selectedInvoice = '1';
+		let selectedLineWeight = '10';
+		let selectedVias = '0.8';
+		let selectedSolderCover = 'converoil';
+		let selectedFlyingProbe = 'full';
+		let selectedSurfaceFinish = 'haslwithfree';
+		if (boardLayersContainer.innerHTML !== '') {
+			selectedLayer = document.querySelector('input[name="BoardLayers"]:checked')?.value || selectedLayer;
+		}
+		if (aluminumTypeContainer.innerHTML !== '') {
+			selectedAluminumType = document.querySelector('input[name="AluminumType"]:checked')?.value || '1';
+		}
+		if (boardThicknessContainer.innerHTML !== '') {
+			selectedBoardThickness = document.querySelector('input[name="BoardThickness"]:checked')?.value || '1.6';
+		}
+		if (copperThicknessContainer.innerHTML !== '') {
+			selectedCopperThickness = document.querySelector('input[name="CopperThickness"]:checked')?.value || '1';
+		}
+		if (innerCopperThicknessContainer.innerHTML !== '') {
+			selectedInnerCopperThickness = document.querySelector('input[name="InnerCopperThickness"]:checked')?.value || '0.5';
+		}
+		if (solderColorContainer.innerHTML !== '') {
+			selectedSolderColor = document.querySelector('input[name="SolderColor"]:checked')?.value || 'green';
+		}
+		if (fontColorContainer.innerHTML !== '') {
+			selectedFontColor = document.querySelector('input[name="FontColor"]:checked')?.value || 'white';
+		}
+		if (invoiceContainer.innerHTML !== '') {
+			selectedInvoice = document.querySelector('input[name="Invoice"]:checked')?.value || '1';
+		}
+		if (lineWeightContainer.innerHTML !== '') {
+			selectedLineWeight = document.querySelector('input[name="LineWeight"]:checked')?.value || '10';
+		}
+		if (viasContainer.innerHTML !== '') {
+			selectedVias = document.querySelector('input[name="Vias"]:checked')?.value || '0.8';
+		}
+		if (solderCoverContainer.innerHTML !== '') {
+			selectedSolderCover = document.querySelector('input[name="SolderCover"]:checked')?.value || 'converoil';
+		}
+		if (flyingProbeContainer.innerHTML !== '') {
+			selectedFlyingProbe = document.querySelector('input[name="FlyingProbe"]:checked')?.value || 'full';
+		}
+		if (surfaceFinishContainer.innerHTML !== '') {
+			selectedSurfaceFinish = document.querySelector('input[name="SurfaceFinish"]:checked')?.value || 'haslwithfree';
+		}
+		boardLayersContainer.innerHTML = '';
+		aluminumTypeContainer.innerHTML = '';
+		boardThicknessContainer.innerHTML = '';
+		copperThicknessContainer.innerHTML = '';
+		innerCopperThicknessContainer.innerHTML = '';
+		solderColorContainer.innerHTML = '';
+		fontColorContainer.innerHTML = '';
+		invoiceContainer.innerHTML = '';
+		lineWeightContainer.innerHTML = '';
+		viasContainer.innerHTML = '';
+		solderCoverContainer.innerHTML = '';
+		flyingProbeContainer.innerHTML = '';
+		surfaceFinishContainer.innerHTML = '';
+
+		console.log(`selectedCategory: ${selectedCategory}`);
+		console.log(`selectedMixedCategory: ${selectedMixedCategory}`)
+		console.log(`selectedHDIBuilds: ${selectedHDIBuilds}`)
+		console.log(`selectedLayer: ${selectedLayer}`)
+
+		// 板子层数
+		const layersToShow =
+			selectedCategory === 'rogersItem' ?
+				boardLayersOptions[selectedCategory][selectedMixedCategory] || [] :
+				selectedCategory === 'hdiItem' ?
+					boardLayersOptions[selectedCategory][selectedHDIBuilds] || [] :
+					boardLayersOptions[selectedCategory] || [];
+		// 基板类型
+		const aluminumTypeToShow = aluminumTypeOptions[selectedCategory] || [];
+		// 板子厚度
+		const thicknessToShow =
+			selectedCategory === 'rogersItem' ?
+				boardThicknessOptions[selectedCategory][selectedMixedCategory][selectedLayer] || boardThicknessOptions[selectedCategory][selectedMixedCategory]['4'] :
+				selectedCategory === 'hdiItem' ?
+					selectedHDIBuilds === '1' ?
+						boardThicknessOptions[selectedCategory][selectedHDIBuilds][selectedLayer] || boardThicknessOptions[selectedCategory][selectedHDIBuilds]['4'] :
+						selectedHDIBuilds === '2' ?
+							boardThicknessOptions[selectedCategory][selectedHDIBuilds][selectedLayer] || boardThicknessOptions[selectedCategory][selectedHDIBuilds]['6'] :
+							selectedHDIBuilds === '3' ?
+								boardThicknessOptions[selectedCategory][selectedHDIBuilds][selectedLayer] || boardThicknessOptions[selectedCategory][selectedHDIBuilds]['8'] :
+								boardThicknessOptions[selectedCategory][selectedLayer] || [] : boardThicknessOptions[selectedCategory][selectedLayer] ||boardThicknessOptions[selectedCategory]['1'];
+		// 外层铜厚
+		const copperThicknessToShow =
+			selectedCategory === 'rogersItem' ?
+				copperThicknessOptions[selectedCategory][selectedMixedCategory][selectedLayer] || copperThicknessOptions[selectedCategory][selectedMixedCategory]['4'] :
+				selectedCategory === 'hdiItem' ?
+					selectedHDIBuilds === '1' ?
+						copperThicknessOptions[selectedCategory][selectedHDIBuilds][selectedLayer] || copperThicknessOptions[selectedCategory][selectedHDIBuilds]['4'] :
+						selectedHDIBuilds === '2' ?
+							copperThicknessOptions[selectedCategory][selectedHDIBuilds][selectedLayer] || copperThicknessOptions[selectedCategory][selectedHDIBuilds]['6'] :
+							selectedHDIBuilds === '3' ?
+								copperThicknessOptions[selectedCategory][selectedHDIBuilds][selectedLayer] || copperThicknessOptions[selectedCategory][selectedHDIBuilds]['8'] :
+								copperThicknessOptions[selectedCategory][selectedLayer] || [] : copperThicknessOptions[selectedCategory][selectedLayer] || copperThicknessOptions[selectedCategory]['1'];
+		// 内层铜厚
+		const innerCopperThicknessToShow =
+			selectedCategory === 'rogersItem' ?
+				innerCopperThicknessOptions[selectedCategory][selectedMixedCategory][selectedLayer] || innerCopperThicknessOptions[selectedCategory][selectedMixedCategory]['4'] :
+				selectedCategory === 'hdiItem' ?
+					selectedHDIBuilds === '1' ?
+						innerCopperThicknessOptions[selectedCategory][selectedHDIBuilds][selectedLayer] || innerCopperThicknessOptions[selectedCategory][selectedHDIBuilds]['4'] :
+						selectedHDIBuilds === '2' ?
+							innerCopperThicknessOptions[selectedCategory][selectedHDIBuilds][selectedLayer] || innerCopperThicknessOptions[selectedCategory][selectedHDIBuilds]['6'] :
+							selectedHDIBuilds === '3' ?
+								innerCopperThicknessOptions[selectedCategory][selectedHDIBuilds][selectedLayer] || innerCopperThicknessOptions[selectedCategory][selectedHDIBuilds]['8'] :
+								innerCopperThicknessOptions[selectedCategory][selectedLayer] || [] : innerCopperThicknessOptions[selectedCategory][selectedLayer] || [];
+		// 阻焊颜色
+		const solderColorsToShow = solderColorOptions[selectedCategory] || [];
+		// 字符颜色
+		const fontColorsToShow = fontColorOptions[selectedCategory] || [];
+		// 导热系数
+		const invoiceToShow = invoiceOptions[selectedCategory] || [];
+		// 最小线宽/线距
+		const lineWeightsToShow = lineWeightOptions[selectedCategory] || [];
+		// 最小孔径
+		const viasToShow = viasOptions[selectedCategory] || [];
+		// 过孔盖油
+		const solderCoverToShow = solderCoverOptions[selectedCategory] || [];
+		// 飞针测试
+		const flyingProbeToShow = flyingProbeOptions[selectedCategory] || [];
+		// 表面处理
+		const surfaceFinishToShow = surfaceFinishOptions[selectedCategory] || [];
+
+		console.log(`thicknessToShow: ${thicknessToShow}`);
+
+		layersToShow.forEach(layer => {
+			const label = document.createElement('label');
+			label.className = 'item cursor-pointer';
+			label.innerHTML = `
+                    <input class="hidden peer" name="BoardLayers" type="radio" value="${layer}">
+                    <span class="block p-1.5 border border-gray-300 rounded-md text-gray-700 text-xs sm:text-sm hover:border-blue-500 transition-colors duration-200 ease-in-out
+                                 peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700">${layer}</span>
+                `;
+			boardLayersContainer.appendChild(label);
+		});
+		aluminumTypeToShow.forEach(([value, image, text]) => {
+			const label = document.createElement('label');
+			label.className = 'item cursor-pointer';
+			label.innerHTML = `
+					<input class="hidden peer" name="AluminumType" type="radio" value="${value}" ${value === selectedAluminumType ? 'checked' : ''}>
+					<span class="block p-1.5 border border-gray-300 rounded-md text-gray-700 text-xs sm:text-sm hover:border-blue-500 transition-colors duration-200 ease-in-out
+								 peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700"><img alt="HDI" class="mr-1 h-6 inline-block" src="/iframe/img/${image}.jpg"> ${text}</span>
+				`;
+			aluminumTypeContainer.appendChild(label);
+		});
+		thicknessToShow.forEach(thickness => {
+			const label = document.createElement('label');
+			label.className = 'item cursor-pointer';
+			label.innerHTML = `
+					<input class="hidden peer" name="BoardThickness" type="radio" value="${thickness}">
+					<span class="block p-1.5 border border-gray-300 rounded-md text-gray-700 text-xs sm:text-sm hover:border-blue-500 transition-colors duration-200 ease-in-out
+								 peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700">${thickness}mm</span>
+				`;
+			boardThicknessContainer.appendChild(label);
+		});
+		copperThicknessToShow.forEach(copperThickness => {
+			const label = document.createElement('label');
+			label.className = 'item cursor-pointer';
+			label.innerHTML = `
+					<input class="hidden peer" name="CopperThickness" type="radio" value="${copperThickness}">
+					<span class="block p-1.5 border border-gray-300 rounded-md text-gray-700 text-xs sm:text-sm hover:border-blue-500 transition-colors duration-200 ease-in-out
+								 peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700">${copperThickness}oz</span>
+				`;
+			copperThicknessContainer.appendChild(label);
+		});
+		innerCopperThicknessToShow.forEach(innerCopperThickness => {
+			const label = document.createElement('label');
+			label.className = 'item cursor-pointer';
+			label.innerHTML = `
+					<input class="hidden peer" name="InnerCopperThickness" type="radio" value="${innerCopperThickness}">
+					<span class="block p-1.5 border border-gray-300 rounded-md text-gray-700 text-xs sm:text-sm hover:border-blue-500 transition-colors duration-200 ease-in-out
+								 peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700">${innerCopperThickness}oz</span>
+				`;
+			innerCopperThicknessContainer.appendChild(label);
+		});
+		solderColorsToShow.forEach(([value, text, color]) => {
+			const label = document.createElement('label');
+			label.className = 'item cursor-pointer';
+			label.innerHTML = `
+					<input class="hidden peer" name="SolderColor" type="radio" value="${value}" ${value === selectedSolderColor ? 'checked' : ''}>
+					<span class="block p-1.5 border border-gray-300 rounded-md text-gray-700 text-xs sm:text-sm hover:border-blue-500 transition-colors duration-200 ease-in-out
+								 peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700"><em class="example-color" style="background: ${color}"></em>${text}</span>
+				`;
+			solderColorContainer.appendChild(label);
+		});
+		fontColorsToShow.forEach(([value, text, color]) => {
+			const label = document.createElement('label');
+			label.className = 'item cursor-pointer';
+			label.innerHTML = `
+					<input class="hidden peer" name="FontColor" type="radio" value="${value}" ${value === selectedFontColor ? 'checked' : ''}>
+					<span class="block p-1.5 border border-gray-300 rounded-md text-gray-700 text-xs sm:text-sm hover:border-blue-500 transition-colors duration-200 ease-in-out
+								 peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700"><em class="example-color" style="background: ${color}"></em>${text}</span>
+				`;
+			fontColorContainer.appendChild(label);
+		});
+		invoiceToShow.forEach(([value, text]) => {
+			const label = document.createElement('label');
+			label.className = 'item cursor-pointer';
+			label.innerHTML = `
+					<input class="hidden peer" name="Invoice" type="radio" value="${value}" ${value === selectedInvoice ? 'checked' : ''}>
+					<span class="block p-1.5 border border-gray-300 rounded-md text-gray-700 text-xs sm:text-sm hover:border-blue-500 transition-colors duration-200 ease-in-out
+								 peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700">${text}</span>
+				`;
+			invoiceContainer.appendChild(label);
+		});
+		lineWeightsToShow.forEach(lineWeight => {
+			const label = document.createElement('label');
+			label.className = 'item cursor-pointer';
+			label.innerHTML = `
+					<input class="hidden peer" name="LineWeight" type="radio" value="${lineWeight}" ${lineWeight === selectedLineWeight ? 'checked' : ''}>
+					<span class="block p-1.5 border border-gray-300 rounded-md text-gray-700 text-xs sm:text-sm hover:border-blue-500 transition-colors duration-200 ease-in-out
+								 peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700">${lineWeight}/${lineWeight}mil↑</span>
+				`;
+			lineWeightContainer.appendChild(label);
+		});
+		viasToShow.forEach(via => {
+			const label = document.createElement('label');
+			label.className = 'item cursor-pointer';
+			label.innerHTML = `
+					<input class="hidden peer" name="Vias" type="radio" value="${via}" ${via === selectedVias ? 'checked' : ''}>
+					<span class="block p-1.5 border border-gray-300 rounded-md text-gray-700 text-xs sm:text-sm hover:border-blue-500 transition-colors duration-200 ease-in-out
+								 peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700">${via}mm</span>
+				`;
+			viasContainer.appendChild(label);
+		});
+		solderCoverToShow.forEach(([value, text]) => {
+			const label = document.createElement('label');
+			label.className = 'item cursor-pointer';
+			label.innerHTML = `
+					<input class="hidden peer" name="SolderCover" type="radio" value="${value}" ${value === selectedSolderCover ? 'checked' : ''}>
+					<span class="block p-1.5 border border-gray-300 rounded-md text-gray-700 text-xs sm:text-sm hover:border-blue-500 transition-colors duration-200 ease-in-out
+								 peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700">${text}</span>
+				`;
+			solderCoverContainer.appendChild(label);
+		});
+		flyingProbeToShow.forEach(([value, text]) => {
+			const label = document.createElement('label');
+			label.className = 'item cursor-pointer';
+			label.innerHTML = `
+					<input class="hidden peer" name="FlyingProbe" type="radio" value="${value}" ${value === selectedFlyingProbe ? 'checked' : ''}>
+					<span class="block p-1.5 border border-gray-300 rounded-md text-gray-700 text-xs sm:text-sm hover:border-blue-500 transition-colors duration-200 ease-in-out
+								 peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700">${text}</span>
+				`;
+			flyingProbeContainer.appendChild(label);
+		});
+		surfaceFinishToShow.forEach(([value, text]) => {
+			const label = document.createElement('label');
+			label.className = 'item cursor-pointer';
+			label.innerHTML = `
+					<input class="hidden peer" name="SurfaceFinish" type="radio" value="${value}" ${value === selectedSurfaceFinish ? 'checked' : ''}>
+					<span class="block p-1.5 border border-gray-300 rounded-md text-gray-700 text-xs sm:text-sm hover:border-blue-500 transition-colors duration-200 ease-in-out
+								 peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700">${text}</span>
+				`;
+			surfaceFinishContainer.appendChild(label);
+		});
+
+		if (selectedCategory === 'hdiItem') {
+			document.getElementById('HDIBuilds-container').style.display = 'block';
+			document.getElementById('MixedCategory-container').style.display = 'none';
+		} else if (selectedCategory === 'rogersItem') {
+			document.getElementById('HDIBuilds-container').style.display = 'none';
+			document.getElementById('MixedCategory-container').style.display = 'block';
+		} else {
+			document.getElementById('HDIBuilds-container').style.display = 'none';
+			document.getElementById('MixedCategory-container').style.display = 'none';
+		}
+
+		if (selectedLayer >= 4) {
+			document.getElementById('InnerCopperThickness-container').style.display = 'block';
+		} else {
+			document.getElementById('InnerCopperThickness-container').style.display = 'none';
+		}
+
+		if (selectedCategory === 'aluminumItem' || selectedCategory === 'copperItem') {
+			document.getElementById('Invoice-container').style.display = 'block';
+			selectedCategory === 'copperItem' ?
+				document.getElementById('CopperStructure-container').style.display = 'block' :
+				document.getElementById('CopperStructure-container').style.display = 'none';
+			selectedCategory === 'aluminumItem' ?
+				document.getElementById('WithstandVoltage-container').style.display = 'block' :
+				document.getElementById('WithstandVoltage-container').style.display = 'none';
+			if (selectedLayer !== '1') {
+				document.getElementById('AluminumType-container').style.display = 'block';
+			} else {
+				document.getElementById('AluminumType-container').style.display = 'none';
+			}
+		} else {
+			document.getElementById('Invoice-container').style.display = 'none';
+			document.getElementById('AluminumType-container').style.display = 'none';
+			document.getElementById('CopperStructure-container').style.display = 'none';
+		}
+
+		if (selectedCategory === 'fr4Item' || selectedCategory === 'rogersItem') {
+			document.getElementById('SolderCover-container').style.display = 'block';
+		} else {
+			document.getElementById('SolderCover-container').style.display = 'none';
+		}
+
+		if (selectedCategory === 'fr4Item') {
+			document.getElementById('ImpedanceSize-container').style.display = 'block';
+			if(selectedLayer === '4') {
+				document.getElementById('StackedStructure-container').style.display = 'block';
+			} else {
+				document.getElementById('StackedStructure-container').style.display = 'none';
+			}
+		} else {
+			document.getElementById('ImpedanceSize-container').style.display = 'none';
+			document.getElementById('StackedStructure-container').style.display = 'none';
+		}
+
+		if (selectedCategory === 'fr4Item' || selectedCategory === 'rogersItem' || selectedCategory === 'hdiItem') {
+			document.getElementById('HalfHole-container').style.display = 'block';
+			document.getElementById('HoleThickness_-container').style.display = 'block';
+		} else {
+			document.getElementById('HalfHole-container').style.display = 'none';
+			document.getElementById('HoleThickness_-container').style.display = 'none';
+		}
+
+		setupRadioGroup('BoardLayers', 'BoardLayers', selectedLayer);
+		setupRadioGroup('BoardThickness', 'BoardThickness', selectedBoardThickness);
+		setupRadioGroup('CopperThickness', 'CopperThickness', selectedCopperThickness);
+		setupRadioGroup('InnerCopperThickness', 'InnerCopperThickness', selectedInnerCopperThickness);
+		setupRadioGroup('SolderColor', 'SolderColor', selectedSolderColor);
+		setupRadioGroup('FontColor', 'FontColor', selectedFontColor);
+		setupRadioGroup('Invoice', 'Invoice', selectedInvoice);
+		setupRadioGroup('LineWeight', 'LineWeight', selectedLineWeight);
+		setupRadioGroup('Vias', 'Vias', selectedVias);
+		setupRadioGroup('SolderCover', 'SolderCover', selectedSolderCover);
+		setupRadioGroup('FlyingProbe', 'FlyingProbe', selectedFlyingProbe);
+		setupRadioGroup('SurfaceFinish', 'SurfaceFinish', selectedSurfaceFinish);
+	}
+</script>
+
+<script>
+	let presetName = '';
+
+	let presetList = eda.sys_Storage.getExtensionUserConfig('PresetList') || {};
+
+	/*let presetList = {
+		'测试测试': {
+			proCategory: 'rogersItem',
+			BoardHeight: '10',
+			BoardWidth: '10',
+			num: '5',
+			MixedCategory: '2',
+			BoardLayers: '8',
+			BoardType: 'pcs',
+			OrderStage: '0',
+			BoardThickness: '3.0',
+			CopperThickness: '2',
+			InnerCopperThickness: '1',
+			AluminumType: '1',
+			CopperStructure: '1',
+			Invoice: '4',
+			SolderColor: 'yellow',
+			FontColor: 'black',
+			LineWeight: '8',
+			Vias: '0.7',
+			SolderCover: 'aluminumplughole',
+			FlyingProbe: 'teststand',
+			SurfaceFinish: 'immersiongold',
+			ImGoldThinckness: '2',
+			FormingType: 'mechanical',
+			ImpedanceSize: '1',
+			HalfHole: '4',
+			HoleThickness_: '25',
+			WithstandVoltage: '4000',
+			QualityCompensation: '2',
+			LowResistanceTest: '1',
+			ProductFileSure: '1',
+			ReportMaterial: '1',
+			GongBoundaryTolerance: '1',
+			PanelAppearanceRequire: '1',
+			WhitePaperService: '1',
+			IsNoneFont: '1'
+		}
+	}*/
+
+	document.getElementById('CreatePreset').addEventListener('click', () => {
+		const newPresetName = document.getElementById('PresetName').value;
+		if (newPresetName && !presetList[newPresetName]) {
+			presetList[newPresetName] = {};
+			presetName = newPresetName;
+			showPresetList();
+		} else if (presetList[newPresetName]) {
+			dialog('错误', '预设名称已存在，必须使用其他名称。');
+		} else {
+			dialog('错误', '预设名称不能为空。');
+		}
+	});
+
+	document.getElementById('savePreset').addEventListener('click', () => {
+		if (presetName) {
+			presetList[presetName] = {
+				proCategory: document.querySelector('input[name="proCategory"]:checked')?.value || '',
+				BoardHeight: document.getElementById('BoardHeight').value,
+				BoardWidth: document.getElementById('BoardWidth').value,
+				num: document.getElementById('num').value,
+				MixedCategory: document.querySelector('input[name="MixedCategory"]:checked')?.value || '',
+				BoardLayers: document.querySelector('input[name="BoardLayers"]:checked')?.value || '',
+				BoardType: document.querySelector('input[name="BoardType"]:checked')?.value || '',
+				OrderStage: document.querySelector('input[name="OrderStage"]:checked')?.value || '',
+				BoardThickness: document.querySelector('input[name="BoardThickness"]:checked')?.value || '',
+				CopperThickness: document.querySelector('input[name="CopperThickness"]:checked')?.value || '',
+				InnerCopperThickness: document.querySelector('input[name="InnerCopperThickness"]:checked')?.value || '',
+				AluminumType: document.querySelector('input[name="AluminumType"]:checked')?.value || '',
+				CopperStructure: document.querySelector('input[name="CopperStructure"]:checked')?.value || '',
+				Invoice: document.querySelector('input[name="Invoice"]:checked')?.value || '',
+				SolderColor: document.querySelector('input[name="SolderColor"]:checked')?.value || '',
+				FontColor: document.querySelector('input[name="FontColor"]:checked')?.value || '',
+				LineWeight: document.querySelector('input[name="LineWeight"]:checked')?.value || '',
+				Vias: document.querySelector('input[name="Vias"]:checked')?.value || '',
+				SolderCover: document.querySelector('input[name="SolderCover"]:checked')?.value || '',
+				FlyingProbe: document.querySelector('input[name="FlyingProbe"]:checked')?.value || '',
+				SurfaceFinish: document.querySelector('input[name="SurfaceFinish"]:checked')?.value || '',
+				ImGoldThinckness: document.querySelector('input[name="ImGoldThinckness"]:checked')?.value || '',
+				HalfHole: document.querySelector('input[name="HalfHole"]:checked')?.value || '',
+				HoleThickness_: document.querySelector('input[name="HoleThickness_"]:checked')?.value || '',
+				ImpedanceSize: document.querySelector('input[name="ImpedanceSize"]:checked')?.value || '',
+				WithstandVoltage: document.querySelector('input[name="WithstandVoltage"]:checked')?.value || '',
+				QualityCompensation: document.querySelector('input[name="QualityCompensation"]:checked')?.value || '',
+				LowResistanceTest: document.querySelector('input[name="LowResistanceTest"]:checked')?.value || '',
+				ProductFileSure: document.querySelector('input[name="ProductFileSure"]:checked')?.value || '',
+				ReportMaterial: document.querySelector('input[name="ReportMaterial"]:checked')?.value || '',
+				GongBoundaryTolerance: document.querySelector('input[name="GongBoundaryTolerance"]:checked')?.value || '',
+				PanelAppearanceRequire: document.querySelector('input[name="PanelAppearanceRequire"]:checked')?.value || '',
+				WhitePaperService: document.querySelector('input[name="WhitePaperService"]:checked')?.value || '',
+				IsNoneFont: document.querySelector('input[name="IsNoneFont"]:checked')?.value || ''
+			};
+
+			eda.sys_Storage.setExtensionUserConfig('PresetList', presetList);
+		}
+	});
+
+	document.getElementById('deletePreset').addEventListener('click', () => {
+		// 删除当前选择的预设
+		if (presetName && presetList[presetName]) {
+			delete presetList[presetName];
+			presetName = ''; // 清空预设名称
+			eda.sys_Storage.setExtensionUserConfig('PresetList', presetList);
+			showPresetList(); // 更新预设列表显示
+		} else {
+			dialog('错误', '没有选择要删除的预设。');
+		}
+	});
+
+	function showPresetList() {
+		const presetListContainer = document.getElementById('PresetList');
+		presetListContainer.innerHTML = ''; // 清空现有内容
+		for (const name in presetList) {
+			const iconList = {
+				'fr4Item': '/iframe/img/img_pro_FR4.png',
+				'rogersItem': '/iframe/img/img_pro_Rogers.png',
+				'hdiItem': '/iframe/img/img_pro_HDI.png',
+				'aluminumItem': '/iframe/img/img_pro_Aluminum.png',
+				'copperItem': '/iframe/img/img_pro_Copper.png',
+				'cem1Item': '/iframe/img/img_pro_CEM1.png',
+				'22fItem': '/iframe/img/img_pro_22F.png',
+				'cem3Item': '/iframe/img/img_pro_CEM3.png',
+				'fr1Item': '/iframe/img/img_pro_FR1.png'
+			}
+			const icon_src = iconList[presetList[name].proCategory] || '/iframe/img/img_pro_FR4.png';
+			const label = document.createElement('label');
+			label.className = 'item cursor-pointer';
+			label.innerHTML = `
+				<input class="hidden peer" name="presetName" type="radio" value="${name}" ${name === presetName ? 'checked' : ''}>
+				<span class="block p-1.5 border border-gray-300 rounded-md text-gray-700 font-medium text-xs sm:text-sm hover:border-blue-500 transition-colors duration-200 ease-in-out
+							 peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700">
+					<img class="inline-block h-4" src="${icon_src}" alt="icon">
+					${name}
+				</span>
+			`;
+			// 监听点击 调用 autoSetupPreset 函数
+			label.addEventListener('click', () => {
+				presetName = name; // 更新预设名称
+				autoSetupPreset(name); // 调用自动设置预设函数
+			});
+			presetListContainer.appendChild(label);
+		}
+	}
+
+	document.addEventListener('DOMContentLoaded', () => {
+		showPresetList();
+	});
+
+	// 传入预设名称，自动使用setupRadioGroup所有选项
+	function autoSetupPreset(presetName) {
+		if (presetList[presetName]) {
+			setupRadioGroup('proCategory', 'proCategory', presetList[presetName].proCategory || '');
+			presetList[presetName].proCategory ? updateBoardCraft(presetList[presetName].proCategory) : '';
+			setupRadioGroup('BoardLayers', 'BoardLayers', presetList[presetName].BoardLayers || '');
+			presetList[presetName].proCategory ? updateBoardCraft(presetList[presetName].proCategory) : '';
+			setupRadioGroup('MixedCategory', 'MixedCategory', presetList[presetName].MixedCategory || '');
+			presetList[presetName].proCategory ? updateBoardCraft(presetList[presetName].proCategory) : '';
+			setupRadioGroup('HDIBuilds', 'HDIBuilds', presetList[presetName].HDIBuilds || '');
+			presetList[presetName].proCategory ? updateBoardCraft(presetList[presetName].proCategory) : '';
+			document.getElementById('BoardHeight').value = presetList[presetName].BoardHeight;
+			document.getElementById('BoardWidth').value = presetList[presetName].BoardWidth;
+			document.getElementById('num').value = presetList[presetName].num;
+			setupRadioGroup('BoardType', 'BoardType', presetList[presetName].BoardType);
+			setupRadioGroup('OrderStage', 'OrderStage', presetList[presetName].OrderStage);
+			setupRadioGroup('AluminumType', 'AluminumType', presetList[presetName].AluminumType);
+			setupRadioGroup('CopperStructure', 'CopperStructure', presetList[presetName].CopperStructure);
+			setupRadioGroup('BoardThickness', 'BoardThickness', presetList[presetName].BoardThickness);
+			setupRadioGroup('CopperThickness', 'CopperThickness', presetList[presetName].CopperThickness);
+			setupRadioGroup('Invoice', 'Invoice', presetList[presetName].Invoice);
+			setupRadioGroup('InnerCopperThickness', 'InnerCopperThickness', presetList[presetName].InnerCopperThickness);
+			setupRadioGroup('SolderColor', 'SolderColor', presetList[presetName].SolderColor);
+			setupRadioGroup('FontColor', 'FontColor', presetList[presetName].FontColor);
+			setupRadioGroup('LineWeight', 'LineWeight', presetList[presetName].LineWeight);
+			setupRadioGroup('Vias', 'Vias', presetList[presetName].Vias);
+			setupRadioGroup('SolderCover', 'SolderCover', presetList[presetName].SolderCover);
+			setupRadioGroup('FlyingProbe', 'FlyingProbe', presetList[presetName].FlyingProbe);
+			setupRadioGroup('SurfaceFinish', 'SurfaceFinish', presetList[presetName].SurfaceFinish);
+			setupRadioGroup('ImpedanceSize', 'ImpedanceSize', presetList[presetName].ImpedanceSize);
+			setupRadioGroup('HalfHole', 'HalfHole', presetList[presetName].HalfHole);
+			setupRadioGroup('HoleThickness_', 'HoleThickness_', presetList[presetName].HoleThickness_);
+			setupRadioGroup('WithstandVoltage', 'WithstandVoltage', presetList[presetName].WithstandVoltage);
+			setupRadioGroup('QualityCompensation', 'QualityCompensation', presetList[presetName].QualityCompensation);
+			setupRadioGroup('LowResistanceTest', 'LowResistanceTest', presetList[presetName].LowResistanceTest);
+			setupRadioGroup('ProductFileSure', 'ProductFileSure', presetList[presetName].ProductFileSure);
+			setupRadioGroup('ReportMaterial', 'ReportMaterial', presetList[presetName].ReportMaterial);
+			setupRadioGroup('GongBoundaryTolerance', 'GongBoundaryTolerance', presetList[presetName].GongBoundaryTolerance);
+			setupRadioGroup('PanelAppearanceRequire', 'PanelAppearanceRequire', presetList[presetName].PanelAppearanceRequire);
+			setupRadioGroup('WhitePaperService', 'WhitePaperService', presetList[presetName].WhitePaperService);
+			setupRadioGroup('IsNoneFont', 'IsNoneFont', presetList[presetName].IsNoneFont);
+		}
+	}
+</script>
+</body>
+</html>

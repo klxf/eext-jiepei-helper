@@ -1,0 +1,46 @@
+{
+	"name": "jiepei-helper",
+	"uuid": "817c3321fba54f70b0186500933ed47b",
+	"displayName": "捷配下单助手",
+	"description": "一键前往捷配下单 PCB，支持保存下单偏好",
+	"version": "1.0.1",
+	"publisher": "Mr_Fang",
+	"engines": {
+		"eda": "^2.3.0"
+	},
+	"license": "Apache-2.0",
+	"repository": {
+		"type": "extension-store",
+		"url": ""
+	},
+	"categories": "Other",
+	"keywords": ["Helper"],
+	"images": {
+		"logo": "./images/logo.png"
+	},
+	"homepage": "https://github.com/klxf",
+	"bugs": "",
+	"activationEvents": {},
+	"entry": "./dist/index",
+	"dependentExtensions": {},
+	"headerMenus": {
+		"pcb": [
+			{
+				"id": "jiepei-helper",
+				"title": "捷配",
+				"menuItems": [
+					{
+						"id": "order",
+						"title": "下单",
+						"registerFn": "order"
+					},
+					{
+						"id": "about",
+						"title": "关于",
+						"registerFn": "about"
+					}
+				]
+			}
+		]
+	}
+}
