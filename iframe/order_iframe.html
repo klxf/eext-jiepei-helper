@@ -1208,7 +1208,7 @@
 
 		// 打开新窗口
 		// window.open(url, '_blank');
-		dialog('注意', '下单前务必仔细检查所有项目是否符合预期，捷配官网可能与本扩展显示存在出入，本扩展不对工艺组合可行性进行验证，以捷配官网为准。\n点击确定前往捷配下单。', `window.open('${url}', '_blank')`);
+		dialog('注意', '下单前务必仔细检查所有项目是否符合预期，捷配官网可能与本扩展显示存在出入，本扩展不对工艺组合可行性进行验证，以捷配官网为准。\n点击确定前往捷配下单。', `eda.sys_Window.open('${url}', '_blank')`);
 	});
 
 	document.getElementById('selectBoard').addEventListener('click', () => {
