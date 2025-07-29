@@ -19,7 +19,7 @@
 		"logo": "./images/logo.png"
 	},
 	"homepage": "https://extensions.oshwhub.com/item/fangs233/jiepei-helper",
-	"bugs": "",
+	"bugs": "https://github.com/klxf/eext-jiepei-helper/issues",
 	"activationEvents": {},
 	"entry": "./dist/index",
 	"dependentExtensions": {},
