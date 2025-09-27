@@ -2,6 +2,7 @@
 
 1. 支持自动识别板子层数
 2. 更新依赖 pro-api-types
+3. 检查更新目标更改为 Github Releases
 
 # 1.0.2
 

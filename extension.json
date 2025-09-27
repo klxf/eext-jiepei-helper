@@ -11,14 +11,14 @@
 	"license": "Apache-2.0",
 	"repository": {
 		"type": "github",
-		"url": "https://github.com/klxf/"
+		"url": "https://github.com/klxf/eext-jiepei-helper"
 	},
 	"categories": "Other",
 	"keywords": ["Helper"],
 	"images": {
 		"logo": "./images/logo.png"
 	},
-	"homepage": "https://extensions.oshwhub.com/item/fangs233/jiepei-helper",
+	"homepage": "https://github.com/klxf/eext-jiepei-helper",
 	"bugs": "https://github.com/klxf/eext-jiepei-helper/issues",
 	"activationEvents": {},
 	"entry": "./dist/index",
