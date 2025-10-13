@@ -3,10 +3,10 @@
 	"uuid": "817c3321fba54f70b0186500933ed47b",
 	"displayName": "捷配下单助手",
 	"description": "一键前往捷配下单 PCB，支持保存下单偏好",
-	"version": "1.1.1",
+	"version": "1.2.0",
 	"publisher": "Mr_Fang",
 	"engines": {
-		"eda": "^2.3.0"
+		"eda": "^2.3.0 || ^3.0.0"
 	},
 	"license": "Apache-2.0",
 	"repository": {

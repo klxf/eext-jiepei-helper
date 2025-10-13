@@ -1,5 +1,11 @@
 # 捷配下单助手
 
+<img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/klxf/eext-jiepei-helper?style=flat-square&label=Stars">
+<img alt="GitHub Release" src="https://img.shields.io/github/v/release/klxf/eext-jiepei-helper?style=flat-square&label=Release&color=%233fb950">
+<img alt="GitHub License" src="https://img.shields.io/github/license/klxf/eext-jiepei-helper?style=flat-square&label=License">
+<img alt="GitHub Downloads" src="https://img.shields.io/github/downloads/klxf/eext-jiepei-helper/total?style=flat-square&label=Downloads">
+<img alt="EasyEDA Version" src="https://img.shields.io/badge/dynamic/json?style=flat-square&url=https%3A%2F%2Fraw.githubusercontent.com%2Fklxf%2Feext-jiepei-helper%2Frefs%2Fheads%2Fmaster%2Fextension.json&query=engines.eda&label=EasyEDA&color=5588ff">
+
 一键前往捷配下单 PCB，支持保存下单偏好，~~这很牛头人了~~
 
 ## 如何使用
@@ -14,7 +20,7 @@ _使用本扩展的“检查更新”功能需要给予扩展“外部交互”�
 
 **本扩展仅在 PCB 界面激活**，菜单栏中将出现“捷配”菜单，“下单”子菜单为本扩展的主界面。
 
-可直接在主界面选择 PCB 生产工艺参数，点击“前往下单”按钮即可前往捷配下单 PCB 页面。
+可直接在主界面选择 PCB 生产工艺参数，点击“前往下单”按钮即可前往捷配下单 PCB 页面，同时将自动导出 Berber 制板文件。
 
 > [!IMPORTANT] > **下单前务必仔细检查所有项目是否符合预期，捷配官网可能与本扩展显示存在出入，本扩展不对工艺组合可行性进行验证，以捷配官网为准。**
 
@@ -23,6 +29,7 @@ _使用本扩展的“检查更新”功能需要给予扩展“外部交互”�
 - 【**新建预设**】在“下单”界面顶部“订单工艺预设”面板新建预设，设置工艺参数与个性化服务选项，点击底部“保存预设”按钮即可保存；
 - 【**使用预设**】在“下单”界面顶部“订单工艺预设”面板选择已有的预设，将自动应用此前保存的参数与个性化选项；
 - 【**删除预设**】在“下单”界面顶部“订单工艺预设”面板选择已有的预设，点击底部“删除预设”按钮即可删除。
+- 【**内嵌预设**】点击“下单”界面底部的“内嵌预设”按钮即可将当前工艺参数保存到 PCB 中。若 PCB 中存在内嵌预设，扩展将自动读取。
 
 本扩展支持自动计算：
 

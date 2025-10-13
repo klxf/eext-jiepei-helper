@@ -855,6 +855,12 @@
 				>
 					删除预设
 				</button>
+				<button
+					class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-200 ease-in-out"
+					id="saveToPCB"
+				>
+					内嵌预设
+				</button>
 			</div>
 		</div>
 
@@ -1378,6 +1384,18 @@
 
 		<script>
 			document.addEventListener('DOMContentLoaded', () => {
+				eda.pcb_Layer.getAllLayers().then((layers) => {
+					const data_layer = layers.filter((layer) => layer.id >= 71 && layer.id <= 270 && layer.name.startsWith('【勿动】捷配下单数据'));
+					if (data_layer.length === 0) {
+						return;
+					}
+					const craft_data = JSON.parse(data_layer[0].name.split('=')[1]);
+					// console.log(craft_data);
+					presetList['InnerData'] = craft_data;
+					autoSetupPreset('InnerData');
+					eda.sys_Message.showToastMessage('成功读取内嵌预设', 'success');
+				});
+
 				setupRadioGroup('proCategory', 'proCategory', 'fr4Item', updateBoardCraft);
 				updateBoardCraft(document.getElementById('proCategory').getValue());
 				setupRadioGroup('BoardLayers', 'BoardLayers', '2');
@@ -1466,8 +1484,6 @@
 				const WhitePaperService = document.querySelector('input[name="WhitePaperService"]:checked')?.value || '';
 				const IsNoneFont = document.querySelector('input[name="IsNoneFont"]:checked')?.value || '';
 
-				// 拼接 url：https://www.jiepei.com/pcb/pcbquote?proCategory=fr4Item&BoardHeight=10&BoardWidth=10&num=4&BoardLayers=2&BoardType=set&BoardThickness=2
-
 				let url = `https://www.jiepei.com/pcb/pcbquote?proCategory=${encodeURIComponent(proCategory)}&BoardHeight=${encodeURIComponent(boardHeight)}&BoardWidth=${encodeURIComponent(boardWidth)}&num=${encodeURIComponent(num)}&BoardLayers=${encodeURIComponent(boardLayers)}&BoardType=${encodeURIComponent(boardType)}&OrderStage=${encodeURIComponent(orderStage)}`;
 
 				url += mixedCategory ? `&MixedCategory=${encodeURIComponent(mixedCategory)}` : '';
@@ -1497,6 +1513,17 @@
 				url += PanelAppearanceRequire ? `&PanelAppearanceRequire=${encodeURIComponent(PanelAppearanceRequire)}` : '';
 				url += WhitePaperService ? `&WhitePaperService=${encodeURIComponent(WhitePaperService)}` : '';
 				url += IsNoneFont ? `&IsNoneFont=${encodeURIComponent(IsNoneFont)}` : '';
+
+				// 保存制板文件
+				eda.pcb_ManufactureData.getGerberFile().then((file) => {
+					eda.dmt_Board.getCurrentBoardInfo().then((board) => {
+						const board_name = board.name;
+						const pcb_name = board.pcb.name;
+						const date = new Date();
+						const file_name = `${board_name}_${pcb_name}_${date.getFullYear()}-${date.getMonth()}-${date.getDate()}.zip`;
+						eda.sys_FileSystem.saveFile(file, file_name);
+					});
+				});
 
 				// 打开新窗口
 				// window.open(url, '_blank');
@@ -1552,7 +1579,6 @@
 			});
 
 			function dialog(title, content, cmd) {
-				// tailwind css 实现，带半透明背景
 				let dialogHtml = `
 			<div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity z-50" id="dialogOverlay">
 				<div class="flex items-center justify-center min-h-screen">
@@ -1998,6 +2024,45 @@
 				setupRadioGroup('FlyingProbe', 'FlyingProbe', selectedFlyingProbe);
 				setupRadioGroup('SurfaceFinish', 'SurfaceFinish', selectedSurfaceFinish);
 			}
+
+			function getAllBoardCreaft() {
+				return {
+					proCategory: document.querySelector('input[name="proCategory"]:checked')?.value || '',
+					BoardHeight: document.getElementById('BoardHeight').value,
+					BoardWidth: document.getElementById('BoardWidth').value,
+					num: document.getElementById('num').value,
+					MixedCategory: document.querySelector('input[name="MixedCategory"]:checked')?.value || '',
+					BoardLayers: document.querySelector('input[name="BoardLayers"]:checked')?.value || '',
+					BoardType: document.querySelector('input[name="BoardType"]:checked')?.value || '',
+					OrderStage: document.querySelector('input[name="OrderStage"]:checked')?.value || '',
+					BoardThickness: document.querySelector('input[name="BoardThickness"]:checked')?.value || '',
+					CopperThickness: document.querySelector('input[name="CopperThickness"]:checked')?.value || '',
+					InnerCopperThickness: document.querySelector('input[name="InnerCopperThickness"]:checked')?.value || '',
+					AluminumType: document.querySelector('input[name="AluminumType"]:checked')?.value || '',
+					CopperStructure: document.querySelector('input[name="CopperStructure"]:checked')?.value || '',
+					Invoice: document.querySelector('input[name="Invoice"]:checked')?.value || '',
+					SolderColor: document.querySelector('input[name="SolderColor"]:checked')?.value || '',
+					FontColor: document.querySelector('input[name="FontColor"]:checked')?.value || '',
+					LineWeight: document.querySelector('input[name="LineWeight"]:checked')?.value || '',
+					Vias: document.querySelector('input[name="Vias"]:checked')?.value || '',
+					SolderCover: document.querySelector('input[name="SolderCover"]:checked')?.value || '',
+					FlyingProbe: document.querySelector('input[name="FlyingProbe"]:checked')?.value || '',
+					SurfaceFinish: document.querySelector('input[name="SurfaceFinish"]:checked')?.value || '',
+					ImGoldThinckness: document.querySelector('input[name="ImGoldThinckness"]:checked')?.value || '',
+					HalfHole: document.querySelector('input[name="HalfHole"]:checked')?.value || '',
+					HoleThickness_: document.querySelector('input[name="HoleThickness_"]:checked')?.value || '',
+					ImpedanceSize: document.querySelector('input[name="ImpedanceSize"]:checked')?.value || '',
+					WithstandVoltage: document.querySelector('input[name="WithstandVoltage"]:checked')?.value || '',
+					QualityCompensation: document.querySelector('input[name="QualityCompensation"]:checked')?.value || '',
+					LowResistanceTest: document.querySelector('input[name="LowResistanceTest"]:checked')?.value || '',
+					ProductFileSure: document.querySelector('input[name="ProductFileSure"]:checked')?.value || '',
+					ReportMaterial: document.querySelector('input[name="ReportMaterial"]:checked')?.value || '',
+					GongBoundaryTolerance: document.querySelector('input[name="GongBoundaryTolerance"]:checked')?.value || '',
+					PanelAppearanceRequire: document.querySelector('input[name="PanelAppearanceRequire"]:checked')?.value || '',
+					WhitePaperService: document.querySelector('input[name="WhitePaperService"]:checked')?.value || '',
+					IsNoneFont: document.querySelector('input[name="IsNoneFont"]:checked')?.value || '',
+				};
+			}
 		</script>
 
 		<script>
@@ -2060,43 +2125,7 @@
 
 			document.getElementById('savePreset').addEventListener('click', () => {
 				if (presetName) {
-					presetList[presetName] = {
-						proCategory: document.querySelector('input[name="proCategory"]:checked')?.value || '',
-						BoardHeight: document.getElementById('BoardHeight').value,
-						BoardWidth: document.getElementById('BoardWidth').value,
-						num: document.getElementById('num').value,
-						MixedCategory: document.querySelector('input[name="MixedCategory"]:checked')?.value || '',
-						BoardLayers: document.querySelector('input[name="BoardLayers"]:checked')?.value || '',
-						BoardType: document.querySelector('input[name="BoardType"]:checked')?.value || '',
-						OrderStage: document.querySelector('input[name="OrderStage"]:checked')?.value || '',
-						BoardThickness: document.querySelector('input[name="BoardThickness"]:checked')?.value || '',
-						CopperThickness: document.querySelector('input[name="CopperThickness"]:checked')?.value || '',
-						InnerCopperThickness: document.querySelector('input[name="InnerCopperThickness"]:checked')?.value || '',
-						AluminumType: document.querySelector('input[name="AluminumType"]:checked')?.value || '',
-						CopperStructure: document.querySelector('input[name="CopperStructure"]:checked')?.value || '',
-						Invoice: document.querySelector('input[name="Invoice"]:checked')?.value || '',
-						SolderColor: document.querySelector('input[name="SolderColor"]:checked')?.value || '',
-						FontColor: document.querySelector('input[name="FontColor"]:checked')?.value || '',
-						LineWeight: document.querySelector('input[name="LineWeight"]:checked')?.value || '',
-						Vias: document.querySelector('input[name="Vias"]:checked')?.value || '',
-						SolderCover: document.querySelector('input[name="SolderCover"]:checked')?.value || '',
-						FlyingProbe: document.querySelector('input[name="FlyingProbe"]:checked')?.value || '',
-						SurfaceFinish: document.querySelector('input[name="SurfaceFinish"]:checked')?.value || '',
-						ImGoldThinckness: document.querySelector('input[name="ImGoldThinckness"]:checked')?.value || '',
-						HalfHole: document.querySelector('input[name="HalfHole"]:checked')?.value || '',
-						HoleThickness_: document.querySelector('input[name="HoleThickness_"]:checked')?.value || '',
-						ImpedanceSize: document.querySelector('input[name="ImpedanceSize"]:checked')?.value || '',
-						WithstandVoltage: document.querySelector('input[name="WithstandVoltage"]:checked')?.value || '',
-						QualityCompensation: document.querySelector('input[name="QualityCompensation"]:checked')?.value || '',
-						LowResistanceTest: document.querySelector('input[name="LowResistanceTest"]:checked')?.value || '',
-						ProductFileSure: document.querySelector('input[name="ProductFileSure"]:checked')?.value || '',
-						ReportMaterial: document.querySelector('input[name="ReportMaterial"]:checked')?.value || '',
-						GongBoundaryTolerance: document.querySelector('input[name="GongBoundaryTolerance"]:checked')?.value || '',
-						PanelAppearanceRequire: document.querySelector('input[name="PanelAppearanceRequire"]:checked')?.value || '',
-						WhitePaperService: document.querySelector('input[name="WhitePaperService"]:checked')?.value || '',
-						IsNoneFont: document.querySelector('input[name="IsNoneFont"]:checked')?.value || '',
-					};
-
+					presetList[presetName] = getAllBoardCreaft();
 					eda.sys_Storage.setExtensionUserConfig('PresetList', presetList);
 				}
 			});
@@ -2113,10 +2142,29 @@
 				}
 			});
 
+			document.getElementById('saveToPCB').addEventListener('click', () => {
+				eda.pcb_Layer.getAllLayers().then(async (layers) => {
+					const property = {
+						name: '【勿动】捷配下单数据=' + JSON.stringify(getAllBoardCreaft()),
+						color: '#881415',
+						transparency: 100,
+					};
+
+					const data_layer = layers.filter((layer) => layer.id >= 71 && layer.id <= 270 && layer.name.startsWith('【勿动】捷配下单数据'));
+
+					const layer = data_layer.length === 0 ? await eda.pcb_Layer.addCustomLayer() : data_layer[0].id;
+
+					eda.pcb_Layer.modifyLayer(layer, property).then(() => {
+						dialog('成功', '已将下单预设内嵌到PCB中，请勿删除、修改标有【勿动】字样的层，下次打开扩展将自动识别');
+					});
+				});
+			});
+
 			function showPresetList() {
 				const presetListContainer = document.getElementById('PresetList');
 				presetListContainer.innerHTML = ''; // 清空现有内容
 				for (const name in presetList) {
+					if (name === 'InnerData') continue;
 					const iconList = {
 						'fr4Item': '/iframe/img/img_pro_FR4.png',
 						'rogersItem': '/iframe/img/img_pro_Rogers.png',
