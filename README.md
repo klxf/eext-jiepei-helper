@@ -1,10 +1,6 @@
 # 捷配下单助手
 
-<img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/klxf/eext-jiepei-helper?style=flat-square&label=Stars">
-<img alt="GitHub Release" src="https://img.shields.io/github/v/release/klxf/eext-jiepei-helper?style=flat-square&label=Release&color=%233fb950">
-<img alt="GitHub License" src="https://img.shields.io/github/license/klxf/eext-jiepei-helper?style=flat-square&label=License">
-<img alt="GitHub Downloads" src="https://img.shields.io/github/downloads/klxf/eext-jiepei-helper/total?style=flat-square&label=Downloads">
-<img alt="EasyEDA Version" src="https://img.shields.io/badge/dynamic/json?style=flat-square&url=https%3A%2F%2Fraw.githubusercontent.com%2Fklxf%2Feext-jiepei-helper%2Frefs%2Fheads%2Fmaster%2Fextension.json&query=engines.eda&label=EasyEDA&color=5588ff">
+<img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/klxf/eext-jiepei-helper?style=flat-square&label=Stars"><img alt="GitHub Release" src="https://img.shields.io/github/v/release/klxf/eext-jiepei-helper?style=flat-square&label=Release&color=%233fb950"><img alt="GitHub License" src="https://img.shields.io/github/license/klxf/eext-jiepei-helper?style=flat-square&label=License"><img alt="GitHub Downloads" src="https://img.shields.io/github/downloads/klxf/eext-jiepei-helper/total?style=flat-square&label=Downloads"><img alt="EasyEDA Version" src="https://img.shields.io/badge/dynamic/json?style=flat-square&url=https%3A%2F%2Fraw.githubusercontent.com%2Fklxf%2Feext-jiepei-helper%2Frefs%2Fheads%2Fmaster%2Fextension.json&query=engines.eda&label=EasyEDA&color=5588ff">
 
 一键前往捷配下单 PCB，支持保存下单偏好，~~这很牛头人了~~
 
