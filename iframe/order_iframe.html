@@ -1445,7 +1445,7 @@
 			});
 
 			// 点击 submitOrder 按钮时的事件处理
-			document.getElementById('submitOrder').addEventListener('click', () => {
+			document.getElementById('submitOrder').addEventListener('click', async () => {
 				// 获取各个选项的值
 				const proCategory = document.querySelector('input[name="proCategory"]:checked').value;
 				const mixedCategory = document.querySelector('input[name="MixedCategory"]:checked')?.value || '';
@@ -1515,18 +1515,17 @@
 				url += IsNoneFont ? `&IsNoneFont=${encodeURIComponent(IsNoneFont)}` : '';
 
 				// 保存制板文件
-				eda.pcb_ManufactureData.getGerberFile().then((file) => {
-					eda.dmt_Board.getCurrentBoardInfo().then((board) => {
-						const board_name = board.name;
-						const pcb_name = board.pcb.name;
-						const date = new Date();
-						const file_name = `${board_name}_${pcb_name}_${date.getFullYear()}-${date.getMonth()}-${date.getDate()}.zip`;
-						eda.sys_FileSystem.saveFile(file, file_name);
-					});
-				});
+				const autoGenerateGerber = await eda.sys_Storage.getExtensionUserConfig('autoGenerateGerber');
+				if (autoGenerateGerber) {
+					const file = await eda.pcb_ManufactureData.getGerberFile();
+					const date = new Date();
+					const project_name = (await eda.dmt_Project.getCurrentProjectInfo()).name;
+					const board_name = (await eda.dmt_Board.getCurrentBoardInfo()).name;
+					const file_name = `${project_name}_${board_name}_${date.getFullYear()}-${date.getMonth()}-${date.getDate()}.zip`;
+					await eda.sys_FileSystem.saveFile(file, file_name);
+				}
 
 				// 打开新窗口
-				// window.open(url, '_blank');
 				dialog(
 					'注意',
 					'下单前务必仔细检查所有项目是否符合预期，捷配官网可能与本扩展显示存在出入，本扩展不对工艺组合可行性进行验证，以捷配官网为准。\n点击确定前往捷配下单。',
@@ -1556,7 +1555,7 @@
 							const selectedPrimitives = await eda.pcb_SelectControl.getAllSelectedPrimitives();
 							console.log(selectedPrimitives);
 							if (selectedPrimitives.length === 1) {
-								if (selectedPrimitives[0].regionName === 'Board Outline') {
+								if (selectedPrimitives[0].regionName === 'Board Outline' || selectedPrimitives[0].primitiveType === 'Polyline') {
 									console.log(selectedPrimitives[0]);
 									const BBox = await eda.pcb_Primitive.getPrimitivesBBox([selectedPrimitives[0].getState_PrimitiveId()]);
 									const boardHeight = eda.sys_Unit.milToMm(BBox.maxY - BBox.minY - 10) / 10;
@@ -1565,7 +1564,7 @@
 									document.getElementById('BoardWidth').value = boardWidth.toFixed(2);
 									eda.sys_Message.showToastMessage('已自动识别板子大小', 'success');
 								} else {
-									eda.sys_Message.showToastMessage('所选图元非板框', 'error');
+									eda.sys_Message.showToastMessage('所选图元非板框或线条', 'error');
 								}
 							} else if (selectedPrimitives.length === 0) {
 								eda.sys_Message.showToastMessage('未选择任何图元', 'error');

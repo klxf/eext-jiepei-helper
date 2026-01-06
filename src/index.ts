@@ -24,5 +24,9 @@ export function about(): void {
 }
 
 export function order(): void {
-	eda.sys_IFrame.openIFrame("/iframe/order_iframe.html");
+	eda.sys_IFrame.openIFrame('/iframe/order_iframe.html');
+}
+
+export function settings(): void {
+	eda.sys_IFrame.openIFrame('/iframe/settings.html', 400, 600);
 }

@@ -3,7 +3,7 @@
 	"uuid": "817c3321fba54f70b0186500933ed47b",
 	"displayName": "捷配下单助手",
 	"description": "一键前往捷配下单 PCB，支持保存下单偏好",
-	"version": "1.2.0",
+	"version": "1.3.0",
 	"publisher": "Mr_Fang",
 	"engines": {
 		"eda": "^2.3.0 || ^3.0.0"
@@ -33,6 +33,11 @@
 						"id": "order",
 						"title": "下单",
 						"registerFn": "order"
+					},
+					{
+						"id": "settings",
+						"title": "设置",
+						"registerFn": "settings"
 					},
 					{
 						"id": "about",
